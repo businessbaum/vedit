@@ -1,0 +1,202 @@
+<!--
+  bullet_list.html -- a panel of staggered points, alpha over footage.
+
+  PURE FUNCTION OF ?t=<seconds> (CONTRACT invariant 6). No @keyframes, no
+  transition, no requestAnimationFrame: the kernel reads t, computes every
+  animated value once, writes it, and stops. The stagger below is arithmetic on
+  t, not a delay -- a CSS delay would be sampled at whatever moment Chrome
+  decided the page looked loaded, which is not a clock.
+
+  Query parameters (written by vedit.gfx.frame_params):
+    t seconds | d duration | f frame | n frames | w,h size | p JSON props
+
+  props: {
+    title, items: ["...", ...], numbered: bool,
+    side: "left"|"right", highlight: <index or null>, stagger: <seconds>
+  }
+-->
+<link rel="stylesheet" href="_base.css" />
+<title>Bullet List</title>
+
+<style>
+  .bl {
+    position: absolute;
+    top: var(--safe-y);
+    bottom: var(--safe-y);
+    left: var(--safe-x);
+    right: var(--safe-x);
+    display: flex;
+    align-items: center;
+  }
+  .bl[data-side="right"] {
+    justify-content: flex-end;
+  }
+  .panel {
+    width: min(52%, calc(var(--u) * 54));
+    padding: calc(var(--u) * 2.4) calc(var(--u) * 2.6);
+    background: rgba(11, 14, 19, 0.9);
+    border-radius: calc(var(--u) * 0.9);
+    box-shadow: var(--shadow);
+    /* Panel grows from its own top edge, so the list appears to be written
+       rather than to slide in from off-frame. */
+    clip-path: inset(0 0 var(--grow, 0%) 0 round calc(var(--u) * 0.9));
+  }
+  .bl-title {
+    font-size: calc(var(--u) * 2.5);
+    letter-spacing: calc(var(--u) * -0.05);
+    margin-bottom: calc(var(--u) * 0.9);
+  }
+  .bl-rule {
+    height: calc(var(--u) * 0.2);
+    width: calc(var(--u) * 5.5);
+    background: var(--accent);
+    border-radius: calc(var(--u) * 0.1);
+    transform-origin: left center;
+    transform: scaleX(var(--rule-p, 0));
+    margin-bottom: calc(var(--u) * 1.9);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 1.35);
+  }
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: calc(var(--u) * 1.1);
+    opacity: var(--o, 1);
+    transform: translateY(var(--y, 0px));
+  }
+  .marker {
+    flex: 0 0 auto;
+    font-weight: 800;
+    font-size: calc(var(--u) * 1.15);
+    line-height: 1;
+    color: var(--accent);
+    min-width: calc(var(--u) * 1.9);
+    font-variant-numeric: tabular-nums;
+  }
+  .marker.dot {
+    /* A square reads as a deliberate mark at 1080p; a round bullet at this size
+       antialiases into a smudge. */
+    width: calc(var(--u) * 0.66);
+    height: calc(var(--u) * 0.66);
+    min-width: 0;
+    background: var(--accent);
+    border-radius: calc(var(--u) * 0.1);
+    transform: translateY(calc(var(--u) * -0.3));
+  }
+  .item-text {
+    font-size: calc(var(--u) * 1.62);
+    line-height: 1.3;
+    color: rgba(246, 248, 251, 0.88);
+  }
+  li[data-hot="1"] .item-text {
+    color: var(--paper);
+    font-weight: 700;
+  }
+  li[data-hot="0"] .item-text {
+    color: rgba(246, 248, 251, 0.45);
+  }
+  /* A vertical frame has no room for a side panel: the list takes the full
+     safe width and the graphic sits in the upper half, clear of the caption
+     band and the platform action rail. */
+  @media (max-aspect-ratio: 1/1) {
+    .bl {
+      align-items: flex-start;
+      padding-top: 6%;
+    }
+    .panel {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="stage">
+  <div class="bl" id="bl">
+    <div class="panel" id="panel">
+      <div class="title bl-title" id="title"></div>
+      <div class="bl-rule" id="rule"></div>
+      <ul id="items"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- the t-kernel ---------------------------------------------------------
+  // Duplicated in each template on purpose: a template is meant to be copied to
+  // make a new one, and a graphic that carries its own clock cannot be broken
+  // by an edit to somebody else's file.
+  (function () {
+    var q = new URLSearchParams(location.search);
+    var t = parseFloat(q.get("t") || "0");
+    var d = parseFloat(q.get("d") || "0");
+    var props = {};
+    try {
+      props = JSON.parse(q.get("p") || "{}");
+    } catch (e) {
+      props = {};
+    }
+
+    var IN = 0.42;
+    var OUT = 0.34;
+    var STAGGER = props.stagger === undefined ? 0.16 : Number(props.stagger);
+    var clamp = function (v) {
+      return v < 0 ? 0 : v > 1 ? 1 : v;
+    };
+    var outCubic = function (p) {
+      return 1 - Math.pow(1 - clamp(p), 3);
+    };
+    var exit = d > 0 ? outCubic((d - t) / OUT) : 1;
+    var enter = function (delay, dur) {
+      return outCubic((t - delay) / (dur || IN));
+    };
+
+    var el = function (id) {
+      return document.getElementById(id);
+    };
+
+    var titleNode = el("title");
+    if (props.title) {
+      titleNode.textContent = String(props.title);
+    } else {
+      titleNode.style.display = "none";
+      el("rule").style.display = "none";
+    }
+    el("bl").setAttribute("data-side", props.side === "right" ? "right" : "left");
+    if (props.accent) document.documentElement.style.setProperty("--accent", props.accent);
+
+    el("panel").style.setProperty("--grow", (100 * (1 - Math.min(enter(0, 0.36), exit))).toFixed(3) + "%");
+    el("rule").style.setProperty("--rule-p", Math.min(enter(0.12, 0.45), exit).toFixed(4));
+
+    var items = Array.isArray(props.items) ? props.items : [];
+    var hot = props.highlight === undefined || props.highlight === null ? null : Number(props.highlight);
+    var ul = el("items");
+    for (var i = 0; i < items.length; i++) {
+      var li = document.createElement("li");
+      var marker = document.createElement("span");
+      if (props.numbered) {
+        marker.className = "marker";
+        marker.textContent = String(i + 1).padStart(2, "0");
+      } else {
+        marker.className = "marker dot";
+      }
+      var span = document.createElement("span");
+      span.className = "item-text";
+      span.textContent = String(items[i]);
+      li.appendChild(marker);
+      li.appendChild(span);
+      if (hot !== null) li.setAttribute("data-hot", i === hot ? "1" : "0");
+
+      // Each row has its own entrance offset; the list builds downward at a
+      // readable rate instead of arriving as one slab.
+      var p = Math.min(enter(0.2 + i * STAGGER), exit);
+      li.style.setProperty("--o", p.toFixed(4));
+      li.style.setProperty("--y", ((1 - p) * 1.1).toFixed(3) + "vh");
+      ul.appendChild(li);
+    }
+  })();
+</script>

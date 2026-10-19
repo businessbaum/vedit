@@ -1,0 +1,85 @@
+{
+  "_comment": "The edit decision document, schema v1.1. This is a valid empty long-form project: Project.load() accepts it as-is and recompute() fills _computed with zeros. Copy the folder to projects/<slug>/ and change project_id, or skip the copy entirely and let `ve new <slug> --format longform` build one from presets/formats/. Keys beginning with '_' are documentation and are ignored by every consumer - the file is parsed by the stdlib json module, so there are no // comments anywhere.",
+  "_comment_authority": "Integer frames on ONE project timebase are the only authority here. Seconds appear only inside _computed, are regenerated on every load, and are never hand-edited and never read by the renderer. Timeline positions are DERIVED - a running sum over enabled segments - never stored as truth.",
+  "_comment_never_delete": "Nothing is ever removed from this document. Rejected material becomes \"enabled\": false with a reason and provenance, so every automatic decision is reversible by flipping one boolean.",
+  "_comment_paths": "Every path in this file is relative to THIS directory (the loader resolves it against the project dir), which is what lets a project be copied or moved without rewriting it. The cache at ../../.cache/ is global and keyed purely on content, so two projects sharing a B-roll clip share its renders.",
+
+  "schema_version": "1.1",
+  "project_id": "_TEMPLATE",
+  "created_utc": "2026-08-21T00:00:00Z",
+  "stage": "intake",
+  "_comment_stage": "intake | transcribed | story | rough_cut | graphics | captions | music | export. Set by the pipeline as it advances; a stage never goes backwards on its own.",
+
+  "format_preset": "longform",
+  "_comment_format_preset": "Names a file in presets/formats/. On `ve new` that preset is deep-merged over the skeleton, which is where output, timebase, captions, cut_profile, layout and hook come from. Once merged, THIS document is authoritative - editing the preset afterwards does not retroactively change an existing project, and that is deliberate.",
+
+  "output": {
+    "platform": "youtube",
+    "_comment_platform": "youtube | tiktok | instagram | linkedin. Drives the loudness target and the caption safe area via presets/platforms.json. The loudnorm block below is a frozen copy of that platform's target, not a live reference.",
+    "path": "out/final.mp4",
+    "resolution": [1920, 1080],
+    "v_codec": "h264_nvenc",
+    "cq": 20,
+    "preset": "p6",
+    "a_codec": "aac",
+    "a_bitrate": "320k",
+    "loudnorm": { "I": -14, "TP": -1.5, "LRA": 11 }
+  },
+
+  "timebase": { "fps_num": 30, "fps_den": 1, "sample_rate": 48000 },
+  "_comment_timebase": "Integer 30 fps, not 30000/1001. Intake mandatorily transcodes every source to this CFR rate; that is what makes src_*_frames comparable across cameras and kills the VFR, drop-frame and fps-scaling bug classes at once.",
+
+  "calibrated": false,
+  "_comment_calibrated": "true only after the cut thresholds were checked against a real fixture. Nothing in presets/ has been, so this stays false and QC warns about it. See presets/cut-profiles.json for what calibration involves.",
+
+  "cut_profile": "balanced",
+  "_comment_cut_profile": "Names a profile in presets/cut-profiles.json: conservative | balanced | aggressive.",
+
+  "sources": [],
+  "_comment_sources": "One entry per normalized media file, added by intake. Shape: {id, path (project-relative, ALREADY CFR-normalized to the timebase above), original_path, role (acam|broll|screen|music), strong_key (sha256 of the whole file), probe {duration_frames, fps_num, fps_den, sample_rate, channels, v_codec, a_codec, width, height}}.",
+
+  "transcript": null,
+  "_comment_transcript": "Written by the transcription stage. Shape: {source_id, path (points into the shared cache, e.g. ../../.cache/transcript/<strong_key>.words.json), engine, align_model, language, timestamp_source, word_count}. For German use align_model VOXPOPULI_ASR_BASE_10K_DE - the English LV60K model aligns German badly. timestamp_source records which tier actually ran: wav2vec2-forced-align | dtw | ffmpeg-whisper-token.",
+
+  "story": {
+    "blocks": [],
+    "hook": null
+  },
+  "_comment_story": "The CONTENT-selection pass, before any mechanical cutting: which topics survive, in what order, and where the hook is. Block shape: {id, word_range [start, end], label, decision (keep|drop|maybe), order, rationale}. Mechanical cutting then runs only INSIDE the kept blocks, which also stops filler and retake detection burning time on material that is being dropped wholesale.",
+
+  "segments": [],
+  "_comment_segments": "The cut itself. Shape: {id, source_id, src_in_frames (INCLUSIVE, integer, AUTHORITY), src_out_frames (EXCLUSIVE, integer, AUTHORITY), enabled, order, speed, word_range, text (denormalized for reading only, NEVER authoritative), audio {src_in_frames, src_out_frames (null = mirror video), lead_frames (J-cut), tail_frames (L-cut), fade_in_ms, fade_out_ms, zero_cross_offset_samples, gain_db}, locked, provenance {stage, rule, confidence, applied_by, original_gap_s}, render {cache_key, frames}}.",
+  "_comment_segments_halfopen": "The interval is half-open [in, out): ffmpeg implements trim=end as a strict <. Rounding OUT the same way as IN makes every segment one frame long, which at 200 cuts is about 6.7 s of drift and audio that ends visibly out of sync.",
+
+  "overlays": [],
+  "_comment_overlays": "Graphics. Shape: {id, kind (html), template (repo-relative, e.g. presets/graphics/lower_third.html), props, anchor {segment_id, offset_frames}, duration_frames, layer, render {cache_key, path}}. The anchor is ALWAYS relative to a segment and never an absolute timeline frame, so re-cutting upstream does not desync every graphic in the video.",
+
+  "captions": {
+    "enabled": false,
+    "burn_in": true,
+    "preset": "longform-subtle",
+    "sidecar_path": "out/captions.ass",
+    "overrides": []
+  },
+  "_comment_captions": "preset names a file in presets/captions/. overrides is the escape hatch for text the transcript got wrong: [{word_index, text}]. It earns its keep immediately, because WhisperX runs with --suppress_numerals (numerals otherwise get no timestamps and break alignment), so numbers arrive spelled out - 'zwanzig' where the caption should read '20'.",
+
+  "audio_tracks": [
+    {
+      "id": "vo",
+      "kind": "dialogue",
+      "source": "segments",
+      "gain_db": 0.0
+    }
+  ],
+  "_comment_audio_tracks": "The dialogue track is built from segments[] and is always present. A music bed is a second entry: {id, kind: music, path, timeline_in_frames, gain_db, fade_in_s, fade_out_s, ducking {enabled, sidechain: \"vo\", threshold, ratio, attack_ms, release_ms}}. The whole timeline is rendered in ONE audio pass into pcm_s24le - never per segment, because concatenated AAC drifts about 10.7 ms per junction.",
+
+  "_computed": {
+    "note": "DERIVED - do not hand-edit. Rewritten on every load.",
+    "generated_utc": "2026-08-21T00:00:00Z",
+    "total_frames": 0,
+    "total_seconds": 0.0,
+    "total_samples": 0,
+    "enabled_segment_count": 0,
+    "positions": {}
+  }
+}

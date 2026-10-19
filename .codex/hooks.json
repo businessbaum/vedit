@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .codex/hooks/session-state.ps1",
+            "timeout": 20,
+            "statusMessage": "Reading pipeline state"
+          }
+        ]
+      }
+    ]
+  }
+}

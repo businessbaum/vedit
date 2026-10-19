@@ -1,0 +1,186 @@
+<!--
+  text_hook.html -- the vertical formats' opening text card.
+
+  Referenced by presets/formats/tiktok-raw.json -> hook.template. That preset
+  shipped naming this file before it existed, so `ve gfx` on a tiktok-raw
+  project failed at resolve_template(); this closes that.
+
+  PURE FUNCTION OF ?t=<seconds> (CONTRACT invariant 6). No @keyframes, no
+  transition, no requestAnimationFrame: the kernel reads t, computes every
+  animated value once, writes it, and stops. Chrome's --screenshot has no
+  virtual clock, so a self-animating page would be captured at an arbitrary
+  moment and the frame cache would serve pixels that no longer match its key.
+
+  Query parameters (written by vedit.gfx.frame_params):
+    t seconds | d duration | f frame | n frames | w,h size | p JSON props
+
+  props, exactly the block presets/formats/tiktok-raw.json writes:
+    { text, font_family, font_file, font_px, uppercase, colour, background,
+      outline_px, corner_radius_px, max_lines, align }
+
+  font_px is stated against a 1080-wide vertical frame, which is the frame this
+  card is for. It is converted to a --u multiple rather than used as a literal,
+  so the same props render proportionally at 1920x1080 instead of shrinking to a
+  caption.
+-->
+<link rel="stylesheet" href="_base.css" />
+<title>Text Hook</title>
+
+<style>
+  /* Montserrat is declared here rather than in _base.css because this is the
+     only template that asks for it. The family strings match the ASS Fontname
+     values in CONTRACT section 7 exactly, so the hook and the burned-in
+     captions are visibly the same face. Static files only -- a variable font
+     cannot be weight-selected from ASS and the two lanes would diverge. */
+  @font-face {
+    font-family: "Montserrat";
+    src: url("../../assets/fonts/Montserrat-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: block;
+  }
+  @font-face {
+    font-family: "Montserrat ExtraBold";
+    src: url("../../assets/fonts/Montserrat-ExtraBold.ttf") format("truetype");
+    font-weight: 800;
+    font-style: normal;
+    font-display: block;
+  }
+
+  /* The plate is a solid rounded slab, not the gradient plate the lower third
+     uses: a hook has to survive being screenshotted, reposted and watched at
+     30 % scale, and a graduated edge is the first thing that goes. */
+  .hook {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: var(--o, 0);
+    transform: translateY(var(--y, 0px)) scale(var(--s, 1));
+    transform-origin: center top;
+  }
+  .hook-plate {
+    display: inline-block;
+    padding: calc(var(--u) * 1.5) calc(var(--u) * 2.1);
+    background: var(--plate-bg, rgba(0, 0, 0, 0.8));
+    border-radius: var(--plate-radius, calc(var(--u) * 1.2));
+  }
+  .hook-text {
+    font-family: var(--hook-family), "InterVE", "Segoe UI", sans-serif;
+    font-weight: 800;
+    font-size: var(--hook-size, calc(var(--u) * 7.8));
+    line-height: 1.12;
+    letter-spacing: calc(var(--u) * -0.06);
+    color: var(--hook-colour, #ffffff);
+    text-align: var(--hook-align, center);
+    /* German compounds do not break. Let a long token own its line rather than
+       overflow a plate that has already been sized around it. */
+    overflow-wrap: normal;
+    word-break: keep-all;
+    hyphens: none;
+    white-space: pre-wrap;
+    paint-order: stroke fill;
+    -webkit-text-stroke: var(--hook-stroke, 0px) var(--hook-stroke-colour, #000000);
+  }
+</style>
+
+<div class="stage">
+  <div class="hook" id="hook">
+    <div class="hook-plate" id="plate"><div class="hook-text" id="text"></div></div>
+  </div>
+</div>
+
+<script>
+  // --- the t-kernel ---------------------------------------------------------
+  // Duplicated in each template on purpose: a template is meant to be copied to
+  // make a new one, and a graphic that carries its own clock cannot be broken
+  // by an edit to somebody else's file.
+  (function () {
+    var q = new URLSearchParams(location.search);
+    var t = parseFloat(q.get("t") || "0");
+    var d = parseFloat(q.get("d") || "0");
+    var W = parseFloat(q.get("w") || "1080");
+    var H = parseFloat(q.get("h") || "1920");
+    var props = {};
+    try {
+      props = JSON.parse(q.get("p") || "{}");
+    } catch (e) {
+      props = {};
+    }
+
+    var IN = 0.42;
+    var OUT = 0.34;
+    var clamp = function (v) {
+      return v < 0 ? 0 : v > 1 ? 1 : v;
+    };
+    var outCubic = function (p) {
+      return 1 - Math.pow(1 - clamp(p), 3);
+    };
+    var el = function (id) {
+      return document.getElementById(id);
+    };
+
+    var enter = outCubic(t / IN);
+    var exit = d > 0 ? outCubic((d - t) / OUT) : 1;
+    var p = Math.min(enter, exit);
+
+    // --- region ------------------------------------------------------------
+    // The preset states the box in percent of the frame. Default to
+    // tiktok-raw's hook.region so an overlay written without one still lands in
+    // the same place rather than at 0,0.
+    var region = props.region || { x_pct: 6, y_pct: 10, w_pct: 88, h_pct: 16 };
+    var hook = el("hook");
+    hook.style.left = region.x_pct + "%";
+    hook.style.top = region.y_pct + "%";
+    hook.style.width = region.w_pct + "%";
+    hook.style.height = region.h_pct + "%";
+
+    // --- type --------------------------------------------------------------
+    var root = document.documentElement.style;
+    if (props.font_family) root.setProperty("--hook-family", '"' + props.font_family + '"');
+    if (props.colour) root.setProperty("--hook-colour", props.colour);
+    root.setProperty("--hook-align", props.align === "left" ? "left" : props.align === "right" ? "right" : "center");
+    if (props.background) root.setProperty("--plate-bg", props.background);
+
+    // font_px and corner_radius_px are authored against the SHORT edge of a
+    // vertical frame. Scaling by min(W,H)/1080 keeps the card proportional in a
+    // 16:9 render instead of leaving it caption-sized.
+    var scale = Math.min(W, H) / 1080;
+    if (props.font_px) root.setProperty("--hook-size", (Number(props.font_px) * scale).toFixed(2) + "px");
+    if (props.corner_radius_px !== undefined) {
+      root.setProperty("--plate-radius", (Number(props.corner_radius_px) * scale).toFixed(2) + "px");
+    }
+    if (props.outline_px) {
+      root.setProperty("--hook-stroke", (Number(props.outline_px) * scale).toFixed(2) + "px");
+      root.setProperty("--hook-stroke-colour", props.outline_colour || "#000000");
+    }
+
+    var text = String(props.text === undefined || props.text === null ? "" : props.text);
+    if (props.uppercase) text = text.toUpperCase();
+    el("text").textContent = text;
+    // An empty hook renders nothing at all rather than an empty black slab --
+    // the props block ships with text:"" and the story stage fills it later.
+    if (!text) el("plate").style.display = "none";
+
+    // max_lines is a budget, not a clamp: -webkit-line-clamp would silently
+    // drop the end of the hook, which is the one string that must arrive whole.
+    // Shrink the type instead, the same rule captions.py uses for a compound.
+    var maxLines = Number(props.max_lines || 3);
+    if (text) {
+      var node = el("text");
+      var lineHeight = 1.12;
+      for (var i = 0; i < 12; i++) {
+        var size = parseFloat(getComputedStyle(node).fontSize);
+        var lines = Math.round(node.getBoundingClientRect().height / (size * lineHeight));
+        if (lines <= maxLines) break;
+        root.setProperty("--hook-size", (size * 0.92).toFixed(2) + "px");
+      }
+    }
+
+    // The card lands rather than fades: a small drop plus a settle reads as one
+    // object arriving, which is what holds a scroll.
+    hook.style.setProperty("--o", p.toFixed(4));
+    hook.style.setProperty("--y", ((1 - p) * -1.4).toFixed(3) + "vh");
+    hook.style.setProperty("--s", (0.955 + 0.045 * p).toFixed(4));
+  })();
+</script>

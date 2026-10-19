@@ -1,0 +1,1375 @@
+{
+ "words": [
+  {
+   "word": "Manche",
+   "start": 0.13,
+   "end": 0.38,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "Menschen",
+   "start": 0.38,
+   "end": 0.9,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "haben",
+   "start": 0.9,
+   "end": 1.24,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "Pech",
+   "start": 1.24,
+   "end": 1.53,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "und",
+   "start": 1.53,
+   "end": 1.68,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "es",
+   "start": 1.68,
+   "end": 1.85,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "gibt",
+   "start": 1.85,
+   "end": 2.0,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "Roy.",
+   "start": 2.0,
+   "end": 2.5,
+   "score": 0.9,
+   "sent": 0
+  },
+  {
+   "word": "Ein",
+   "start": 2.5,
+   "end": 2.69,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "Mann,",
+   "start": 2.69,
+   "end": 2.89,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "der",
+   "start": 2.89,
+   "end": 3.19,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "so",
+   "start": 3.19,
+   "end": 3.24,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "oft",
+   "start": 3.24,
+   "end": 3.39,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "vom",
+   "start": 3.39,
+   "end": 3.56,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "Blitz",
+   "start": 3.56,
+   "end": 3.78,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "getroffen",
+   "start": 3.78,
+   "end": 4.26,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "wurde,",
+   "start": 4.26,
+   "end": 4.5,
+   "score": 0.9,
+   "sent": 1
+  },
+  {
+   "word": "dass",
+   "start": 4.5,
+   "end": 4.7,
+   "score": 0.9,
+   "sent": 2
+  },
+  {
+   "word": "selbst",
+   "start": 4.7,
+   "end": 5.01,
+   "score": 0.9,
+   "sent": 2
+  },
+  {
+   "word": "die",
+   "start": 5.01,
+   "end": 5.16,
+   "score": 0.9,
+   "sent": 2
+  },
+  {
+   "word": "Statistik",
+   "start": 5.16,
+   "end": 5.61,
+   "score": 0.9,
+   "sent": 2
+  },
+  {
+   "word": "irgendwann",
+   "start": 5.61,
+   "end": 6.16,
+   "score": 0.9,
+   "sent": 2
+  },
+  {
+   "word": "sagt:",
+   "start": 6.16,
+   "end": 6.31,
+   "score": 0.9,
+   "sent": 2
+  },
+  {
+   "word": "Abschieben",
+   "start": 6.31,
+   "end": 6.76,
+   "score": 0.9,
+   "sent": 3
+  },
+  {
+   "word": "nach",
+   "start": 6.76,
+   "end": 6.99,
+   "score": 0.9,
+   "sent": 3
+  },
+  {
+   "word": "Asgard.",
+   "start": 6.99,
+   "end": 7.18,
+   "score": 0.9,
+   "sent": 3
+  },
+  {
+   "word": "Offiziell",
+   "start": 7.18,
+   "end": 7.86,
+   "score": 0.9,
+   "sent": 4
+  },
+  {
+   "word": "sieben",
+   "start": 7.86,
+   "end": 8.21,
+   "score": 0.9,
+   "sent": 4
+  },
+  {
+   "word": "Treffer.",
+   "start": 8.21,
+   "end": 8.62,
+   "score": 0.9,
+   "sent": 4
+  },
+  {
+   "word": "Roy",
+   "start": 8.62,
+   "end": 9.02,
+   "score": 0.9,
+   "sent": 5
+  },
+  {
+   "word": "selbst",
+   "start": 9.02,
+   "end": 9.38,
+   "score": 0.9,
+   "sent": 5
+  },
+  {
+   "word": "behauptete",
+   "start": 9.38,
+   "end": 9.98,
+   "score": 0.9,
+   "sent": 5
+  },
+  {
+   "word": "es",
+   "start": 9.98,
+   "end": 9.98,
+   "score": 0.9,
+   "sent": 5
+  },
+  {
+   "word": "Es",
+   "start": 9.994,
+   "end": 10.064,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "gab",
+   "start": 10.064,
+   "end": 10.184,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "noch",
+   "start": 10.184,
+   "end": 10.344,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "mehr,",
+   "start": 10.344,
+   "end": 10.504,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "aber",
+   "start": 10.504,
+   "end": 10.744,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "die",
+   "start": 10.744,
+   "end": 10.864,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "konnten",
+   "start": 10.864,
+   "end": 11.144,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "nicht",
+   "start": 11.144,
+   "end": 11.354,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "nachgewiesen",
+   "start": 11.354,
+   "end": 11.824,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "werden.",
+   "start": 11.824,
+   "end": 12.064,
+   "score": 0.9,
+   "sent": 6
+  },
+  {
+   "word": "Einmal",
+   "start": 12.064,
+   "end": 12.544,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "schlägt",
+   "start": 12.544,
+   "end": 12.944,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "der",
+   "start": 12.944,
+   "end": 13.114,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "Blitz",
+   "start": 13.114,
+   "end": 13.344,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "in",
+   "start": 13.344,
+   "end": 13.444,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "seinem",
+   "start": 13.444,
+   "end": 13.754,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "Wachturm",
+   "start": 13.754,
+   "end": 14.164,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "ein.",
+   "start": 14.164,
+   "end": 14.424,
+   "score": 0.9,
+   "sent": 7
+  },
+  {
+   "word": "Zack,",
+   "start": 14.424,
+   "end": 14.644,
+   "score": 0.9,
+   "sent": 8
+  },
+  {
+   "word": "verbranntes",
+   "start": 14.644,
+   "end": 15.364,
+   "score": 0.9,
+   "sent": 8
+  },
+  {
+   "word": "Bein.",
+   "start": 15.364,
+   "end": 15.624,
+   "score": 0.9,
+   "sent": 8
+  },
+  {
+   "word": "Einmal",
+   "start": 15.624,
+   "end": 16.004,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "im",
+   "start": 16.004,
+   "end": 16.134,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "Auto,",
+   "start": 16.134,
+   "end": 16.394,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "Augenbrauen",
+   "start": 16.394,
+   "end": 17.184,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "und",
+   "start": 17.184,
+   "end": 17.364,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "Haare,",
+   "start": 17.364,
+   "end": 17.684,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "im",
+   "start": 17.684,
+   "end": 17.904,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "Vorgarten,",
+   "start": 17.904,
+   "end": 18.404,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "Schulter,",
+   "start": 18.404,
+   "end": 18.894,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "Ranger-Station,",
+   "start": 18.894,
+   "end": 19.964,
+   "score": 0.9,
+   "sent": 9
+  },
+  {
+   "word": "Nach",
+   "start": 19.964,
+   "end": 20.438,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "dem",
+   "start": 20.438,
+   "end": 20.828,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "vierten",
+   "start": 20.828,
+   "end": 21.608,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "Mal",
+   "start": 21.608,
+   "end": 21.968,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "fing",
+   "start": 21.968,
+   "end": 22.188,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "er",
+   "start": 22.188,
+   "end": 22.298,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "an,",
+   "start": 22.298,
+   "end": 22.408,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "Wasser",
+   "start": 22.408,
+   "end": 22.858,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "mit",
+   "start": 22.858,
+   "end": 23.018,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "sich",
+   "start": 23.018,
+   "end": 23.228,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "herumzutragen,",
+   "start": 23.228,
+   "end": 23.968,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "falls",
+   "start": 23.968,
+   "end": 24.158,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "er",
+   "start": 24.158,
+   "end": 24.208,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "wieder",
+   "start": 24.208,
+   "end": 24.378,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "einmal",
+   "start": 24.378,
+   "end": 24.648,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "anfängt",
+   "start": 24.648,
+   "end": 25.068,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "zu",
+   "start": 25.068,
+   "end": 25.128,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "brennen.",
+   "start": 25.128,
+   "end": 25.428,
+   "score": 0.9,
+   "sent": 10
+  },
+  {
+   "word": "Menschen",
+   "start": 25.428,
+   "end": 25.958,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "hielten",
+   "start": 25.958,
+   "end": 26.288,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "irgendwann",
+   "start": 26.288,
+   "end": 26.778,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "Abstand",
+   "start": 26.778,
+   "end": 27.108,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "zu",
+   "start": 27.108,
+   "end": 27.198,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "ihm,",
+   "start": 27.198,
+   "end": 27.418,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "niemand",
+   "start": 27.418,
+   "end": 27.948,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "will",
+   "start": 27.948,
+   "end": 28.168,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "neben",
+   "start": 28.168,
+   "end": 28.488,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "einem",
+   "start": 28.488,
+   "end": 28.768,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "Blitzmagneten",
+   "start": 28.768,
+   "end": 29.548,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "stehen.",
+   "start": 29.548,
+   "end": 29.948,
+   "score": 0.9,
+   "sent": 11
+  },
+  {
+   "word": "er",
+   "start": 29.948,
+   "end": 30.062,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "vor",
+   "start": 30.062,
+   "end": 30.232,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "einer",
+   "start": 30.232,
+   "end": 30.522,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "Gewitterwolke",
+   "start": 30.522,
+   "end": 31.262,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "wegzufahren.",
+   "start": 31.262,
+   "end": 31.952,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "Als",
+   "start": 31.952,
+   "end": 32.262,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "er",
+   "start": 32.262,
+   "end": 32.332,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "dachte,",
+   "start": 32.332,
+   "end": 32.632,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "die",
+   "start": 32.632,
+   "end": 32.782,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "Luft",
+   "start": 32.782,
+   "end": 32.992,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "ist",
+   "start": 32.992,
+   "end": 33.152,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "rein,",
+   "start": 33.152,
+   "end": 33.372,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "steigt",
+   "start": 33.372,
+   "end": 34.032,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "er",
+   "start": 34.032,
+   "end": 34.092,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "aus",
+   "start": 34.092,
+   "end": 34.272,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "dem",
+   "start": 34.272,
+   "end": 34.452,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "Auto",
+   "start": 34.452,
+   "end": 34.772,
+   "score": 0.9,
+   "sent": 12
+  },
+  {
+   "word": "und",
+   "start": 34.772,
+   "end": 34.932,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "wurde",
+   "start": 34.932,
+   "end": 35.192,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "zum",
+   "start": 35.192,
+   "end": 35.352,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "fünften",
+   "start": 35.352,
+   "end": 35.772,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "Mal",
+   "start": 35.772,
+   "end": 35.932,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "getroffen.",
+   "start": 35.932,
+   "end": 36.422,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "Wieder",
+   "start": 36.422,
+   "end": 36.942,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "musste",
+   "start": 36.942,
+   "end": 37.212,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "er",
+   "start": 37.212,
+   "end": 37.312,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "seine",
+   "start": 37.312,
+   "end": 37.572,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "Haare",
+   "start": 37.572,
+   "end": 37.882,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "löschen.",
+   "start": 37.882,
+   "end": 38.252,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "Sechstes",
+   "start": 38.252,
+   "end": 38.852,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "Mal",
+   "start": 38.852,
+   "end": 39.052,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "Knöchel",
+   "start": 39.052,
+   "end": 39.432,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "und",
+   "start": 39.432,
+   "end": 39.632,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "Haare,",
+   "start": 39.632,
+   "end": 39.932,
+   "score": 0.9,
+   "sent": 13
+  },
+  {
+   "word": "und",
+   "start": 39.932,
+   "end": 40.116,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "ein",
+   "start": 40.116,
+   "end": 40.296,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "siebtes",
+   "start": 40.296,
+   "end": 40.696,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "Mal",
+   "start": 40.696,
+   "end": 40.876,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "beim",
+   "start": 40.876,
+   "end": 41.116,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "Angeln,",
+   "start": 41.116,
+   "end": 41.526,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "Oberkörper",
+   "start": 41.526,
+   "end": 42.056,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "und",
+   "start": 42.056,
+   "end": 42.196,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "natürlich",
+   "start": 42.196,
+   "end": 42.686,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "die",
+   "start": 42.686,
+   "end": 42.826,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "Haare.",
+   "start": 42.826,
+   "end": 43.036,
+   "score": 0.9,
+   "sent": 14
+  },
+  {
+   "word": "Die",
+   "start": 43.036,
+   "end": 43.386,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "Chance",
+   "start": 43.386,
+   "end": 43.766,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "sieben",
+   "start": 43.766,
+   "end": 44.156,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "Mal",
+   "start": 44.156,
+   "end": 44.376,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "vom",
+   "start": 44.376,
+   "end": 44.526,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "Blitz",
+   "start": 44.526,
+   "end": 44.786,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "getroffen",
+   "start": 44.786,
+   "end": 45.276,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "zu",
+   "start": 45.276,
+   "end": 45.336,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "werden",
+   "start": 45.336,
+   "end": 45.696,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "ist",
+   "start": 45.696,
+   "end": 45.836,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "schön",
+   "start": 45.836,
+   "end": 46.006,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "und",
+   "start": 46.006,
+   "end": 46.136,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "gut,",
+   "start": 46.136,
+   "end": 46.376,
+   "score": 0.9,
+   "sent": 15
+  },
+  {
+   "word": "aber",
+   "start": 46.376,
+   "end": 46.556,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "ein",
+   "start": 46.556,
+   "end": 46.686,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "bisschen",
+   "start": 46.686,
+   "end": 47.046,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "unrealistisch",
+   "start": 47.046,
+   "end": 47.626,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "wird",
+   "start": 47.626,
+   "end": 47.806,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "es,",
+   "start": 47.806,
+   "end": 47.966,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "wenn",
+   "start": 47.966,
+   "end": 48.156,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "er",
+   "start": 48.156,
+   "end": 48.276,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "sagt,",
+   "start": 48.276,
+   "end": 48.366,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "er",
+   "start": 48.366,
+   "end": 48.546,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "musste",
+   "start": 48.546,
+   "end": 48.876,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "mit",
+   "start": 48.876,
+   "end": 49.016,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "brennenden",
+   "start": 49.016,
+   "end": 49.546,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "Haaren",
+   "start": 49.546,
+   "end": 49.916,
+   "score": 0.9,
+   "sent": 16
+  },
+  {
+   "word": "gegen",
+   "start": 49.98,
+   "end": 50.14,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "einen",
+   "start": 50.14,
+   "end": 50.4,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "Bären",
+   "start": 50.4,
+   "end": 50.62,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "kämpfen,",
+   "start": 50.62,
+   "end": 50.97,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "um",
+   "start": 50.97,
+   "end": 51.2,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "zu",
+   "start": 51.2,
+   "end": 51.3,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "seinem",
+   "start": 51.3,
+   "end": 51.6,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "Auto",
+   "start": 51.6,
+   "end": 51.86,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "zu",
+   "start": 51.86,
+   "end": 51.97,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "kommen.",
+   "start": 51.97,
+   "end": 52.14,
+   "score": 0.9,
+   "sent": 17
+  },
+  {
+   "word": "Ich",
+   "start": 52.14,
+   "end": 52.38,
+   "score": 0.9,
+   "sent": 18
+  },
+  {
+   "word": "hasse",
+   "start": 52.38,
+   "end": 52.57,
+   "score": 0.9,
+   "sent": 18
+  },
+  {
+   "word": "es,",
+   "start": 52.57,
+   "end": 52.65,
+   "score": 0.9,
+   "sent": 18
+  },
+  {
+   "word": "wenn",
+   "start": 52.65,
+   "end": 52.88,
+   "score": 0.9,
+   "sent": 18
+  },
+  {
+   "word": "das",
+   "start": 52.88,
+   "end": 53.0,
+   "score": 0.9,
+   "sent": 18
+  },
+  {
+   "word": "passiert.",
+   "start": 53.0,
+   "end": 53.31,
+   "score": 0.9,
+   "sent": 18
+  }
+ ],
+ "sents": [
+  {
+   "start": 0.0,
+   "end": 2.54,
+   "text": "Manche Menschen haben Pech und es gibt Roy."
+  },
+  {
+   "start": 2.54,
+   "end": 4.5,
+   "text": "Ein Mann, der so oft vom Blitz getroffen wurde,"
+  },
+  {
+   "start": 4.5,
+   "end": 6.34,
+   "text": "dass selbst die Statistik irgendwann sagt:"
+  },
+  {
+   "start": 6.34,
+   "end": 7.34,
+   "text": "Abschieben nach Asgard."
+  },
+  {
+   "start": 7.34,
+   "end": 8.84,
+   "text": "Offiziell sieben Treffer."
+  },
+  {
+   "start": 8.84,
+   "end": 9.98,
+   "text": "Roy selbst behauptete es"
+  },
+  {
+   "start": 9.984,
+   "end": 12.244,
+   "text": "Es gab noch mehr, aber die konnten nicht nachgewiesen werden."
+  },
+  {
+   "start": 12.244,
+   "end": 14.424,
+   "text": "Einmal schlägt der Blitz in seinem Wachturm ein."
+  },
+  {
+   "start": 14.424,
+   "end": 15.624,
+   "text": "Zack, verbranntes Bein."
+  },
+  {
+   "start": 15.624,
+   "end": 19.964,
+   "text": "Einmal im Auto, Augenbrauen und Haare, im Vorgarten, Schulter, Ranger-Station,"
+  },
+  {
+   "start": 19.968,
+   "end": 25.568,
+   "text": "Nach dem vierten Mal fing er an, Wasser mit sich herumzutragen, falls er wieder einmal anfängt zu brennen."
+  },
+  {
+   "start": 25.568,
+   "end": 29.948,
+   "text": "Menschen hielten irgendwann Abstand zu ihm, niemand will neben einem Blitzmagneten stehen."
+  },
+  {
+   "start": 29.951999999999998,
+   "end": 34.772,
+   "text": "er vor einer Gewitterwolke wegzufahren. Als er dachte, die Luft ist rein, steigt er aus dem Auto"
+  },
+  {
+   "start": 34.772,
+   "end": 39.932,
+   "text": "und wurde zum fünften Mal getroffen. Wieder musste er seine Haare löschen. Sechstes Mal Knöchel und Haare,"
+  },
+  {
+   "start": 39.936,
+   "end": 43.196,
+   "text": "und ein siebtes Mal beim Angeln, Oberkörper und natürlich die Haare."
+  },
+  {
+   "start": 43.196,
+   "end": 46.376,
+   "text": "Die Chance sieben Mal vom Blitz getroffen zu werden ist schön und gut,"
+  },
+  {
+   "start": 46.376,
+   "end": 49.916,
+   "text": "aber ein bisschen unrealistisch wird es, wenn er sagt, er musste mit brennenden Haaren"
+  },
+  {
+   "start": 49.92,
+   "end": 52.26,
+   "text": "gegen einen Bären kämpfen, um zu seinem Auto zu kommen."
+  },
+  {
+   "start": 52.26,
+   "end": 53.46,
+   "text": "Ich hasse es, wenn das passiert."
+  }
+ ]
+}

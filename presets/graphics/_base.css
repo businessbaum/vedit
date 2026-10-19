@@ -1,0 +1,172 @@
+/* Shared design tokens for every graphic in presets/graphics/.
+ *
+ * Constraints this file works under, all of them from CONTRACT invariant 6 and
+ * the way the frames are captured:
+ *
+ * - NO @keyframes, no transition, no animation. Every graphic is a pure
+ *   function of ?t=<seconds>; motion is computed in JS from t and written to
+ *   the custom properties below. A CSS animation would be sampled at whatever
+ *   moment Chrome decided the page "looked loaded", which is not a clock.
+ * - The page background stays transparent. Chrome is launched with
+ *   --default-background-color=00000000 and the alpha is what gets composited;
+ *   painting an opaque body would throw it away.
+ * - Sizes are derived from --u, not from px, so one template serves 1920x1080
+ *   and 1080x1920 without a second copy.
+ * - Fonts are the bundled files in assets/fonts. font-display:block is
+ *   deliberate: an unstyled first paint would be captured as the frame.
+ */
+
+@font-face {
+  font-family: "InterVE";
+  src: url("../../assets/fonts/Inter-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "InterVE";
+  src: url("../../assets/fonts/Inter-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "InterVE";
+  src: url("../../assets/fonts/Inter-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "InterVE";
+  src: url("../../assets/fonts/Inter-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  /* One layout unit. Tracks width on 16:9 and stays width-bound on 9:16, so a
+     template written once does not become gigantic in a vertical frame. */
+  --u: min(1vw, 1.7778vh);
+
+  /* Palette: one dark ground, one near-white, one warm accent. Restrained on
+     purpose -- this sits on top of footage and has to stay legible over a
+     stranger's colour grade. */
+  --ink: #0b0e13;
+  --ink-90: rgba(11, 14, 19, 0.9);
+  --ink-70: rgba(11, 14, 19, 0.7);
+  --ink-00: rgba(11, 14, 19, 0);
+  --paper: #f6f8fb;
+  --muted: #9dabbd;
+  --accent: #e8b23a;
+  --accent-ink: #3a2a06;
+  --rule: rgba(246, 248, 251, 0.16);
+
+  /* Broadcast safe area. 5 % on each edge is the tightest any of the four
+     target platforms tolerates; the vertical formats override it. */
+  --safe-x: 5%;
+  --safe-y: 6%;
+
+  --radius: calc(var(--u) * 0.5);
+  --shadow: 0 calc(var(--u) * 0.6) calc(var(--u) * 2.2) rgba(0, 0, 0, 0.45);
+
+  /* Motion, written by the template's t-kernel. Declared here so the CSS is
+     valid and inspectable at t=0 without running the script. */
+  --p: 1; /* overall entrance progress 0..1 */
+  --lift: 0px; /* entrance translate */
+}
+
+/* Vertical formats (9:16, 4:5). Without this the width-bound --u leaves every
+   graphic half-size in a 1080x1920 frame -- 1vw there is 10.8 px against 19.2 px
+   at 1920 wide -- and a lower third ends up unreadable on a phone. */
+@media (max-aspect-ratio: 1/1) {
+  :root {
+    --u: min(1.85vw, 1.05vh);
+    --safe-x: 5%;
+    --safe-y: 4%;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent; /* the alpha channel IS the deliverable */
+  overflow: hidden;
+  font-family: "InterVE", "Inter", "Segoe UI", sans-serif;
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+}
+
+/* --- type ------------------------------------------------------------------ */
+
+.kicker {
+  font-weight: 700;
+  font-size: calc(var(--u) * 1.05);
+  letter-spacing: calc(var(--u) * 0.18);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.title {
+  font-weight: 800;
+  font-size: calc(var(--u) * 3.35);
+  line-height: 1.04;
+  letter-spacing: calc(var(--u) * -0.045); /* tighten optically at display size */
+  color: var(--paper);
+}
+
+.subtitle {
+  font-weight: 500;
+  font-size: calc(var(--u) * 1.5);
+  line-height: 1.28;
+  color: var(--muted);
+}
+
+.body {
+  font-weight: 500;
+  font-size: calc(var(--u) * 1.65);
+  line-height: 1.35;
+  color: var(--paper);
+}
+
+/* German compound nouns do not break, so long words must be allowed to sit on
+   their own line rather than forcing a horizontal overflow nobody sees. */
+.title,
+.subtitle,
+.body {
+  overflow-wrap: normal;
+  word-break: keep-all;
+  hyphens: none;
+}
+
+/* --- parts ----------------------------------------------------------------- */
+
+.accent-bar {
+  background: var(--accent);
+  border-radius: calc(var(--u) * 0.12);
+}
+
+.plate {
+  background: linear-gradient(90deg, var(--ink-90) 0%, var(--ink-90) 62%, var(--ink-00) 100%);
+  border-radius: var(--radius);
+}
+
+.rule {
+  height: 1px;
+  background: var(--rule);
+  transform-origin: left center;
+}

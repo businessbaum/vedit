@@ -1,0 +1,358 @@
+{
+  "_comment": "Threshold sets for the mechanical cutting pass (vedit/cut.py). Three named profiles built on CONTRACT section 8: 'balanced' IS the contract defaults verbatim, 'conservative' cuts less and keeps more breath, 'aggressive' is tighter for short form. Keys beginning with '_' are documentation and MUST be ignored by every consumer.",
+  "_schema": "presets/cut-profiles.json v1",
+
+  "_usage": "cfg = dict(data['profiles'][name]); cfg['vocabulary'] = data['vocabulary']. The word lists live once at top level on purpose: they are language data, not thresholds. Which German particles exist does not change when you decide to cut more aggressively - only the POLICY towards them does, and the policy lives per profile under 'fillers'.",
+
+  "_calibrated": false,
+  "_calibration_comment": "EVERY number below is research-derived synthesis, not a perceptual measurement. Nobody has yet watched a cut made with these thresholds. That is why each profile carries calibrated:false and calibrated_against:null, and why QC warns while project.json's top-level 'calibrated' is false.",
+  "_what_calibration_involves": [
+    "1. Record 3-5 minutes of real German talking-head into assets/samples/ containing, deliberately: one full retake of a sentence, one long 'ähm', one hard topic change, one compound noun over 20 characters, one sentence ending in a plosive (/p t k/), and one passage of genuine thinking-pause that must NOT be cut.",
+    "2. Transcribe it once, keep the words.json as a frozen fixture so re-runs are comparable.",
+    "3. Hand-mark the ground truth: for every gap, should it be cut, and if kept, how long should the retained pause be. For every filler token, remove or keep. For the retake, where does the reparandum start.",
+    "4. Run each profile over the fixture and score it: false cuts (removed something that carried meaning), missed cuts (dead air survived), and audible splices (clicks, clipped plosives, breaths cut mid-inhale).",
+    "5. Move ONE parameter at a time. pad_out first - it is the single most audible one, because /t k s/ releases run past the WhisperX word end and clipping them is what makes a cut sound spliced.",
+    "6. Watch the result at full speed with sound. Frame-accurate is not the same as listenable; jump-cut fatigue only shows up in playback, never in a diff.",
+    "7. When a profile survives, set calibrated:true and calibrated_against to the fixture's strong_key, so a later change to the fixture invalidates the claim instead of silently keeping it."
+  ],
+
+  "default": "balanced",
+
+  "vocabulary": {
+    "_comment": "Tier membership is standard German linguistics in outline (Verzoegerungslaute vs. Modalpartikeln) but the exact lists are judgement and will need adjusting to the speaker's register. Adding a word here changes all three profiles at once, which is correct: a word is or is not a modal particle regardless of how hard you are cutting.",
+
+    "tier_a": {
+      "_comment": "Non-lexical hesitation sounds. No propositional content, so removal is safe by construction. 'am' and 'eh' collide with real German words - the duration test must pass before trusting those two.",
+      "de": ["äh", "ähh", "ähm", "ähmm", "äm", "ehm", "eh", "öh", "öhm", "hm", "hmm", "hmmm", "mh", "mhm", "mmh", "mmm", "äöh", "ah", "ähem"],
+      "en": ["uh", "uhh", "um", "umm", "ummm", "er", "err", "erm", "ah", "ahh", "mm", "mhm", "hmm", "huh"],
+      "ambiguous_require_duration_test": ["am", "eh", "ah", "so"]
+    },
+
+    "tier_b": {
+      "_comment": "Lexical fillers. Real words, but phatic in these fixed collocations. Multi-word entries must be matched as token sequences, not as substrings. 'ne?' 'gell' 'oder?' count only in tag-question position, i.e. sentence-final with a following gap.",
+      "de": ["weißt du", "wissen Sie", "sozusagen", "quasi", "gewissermaßen", "im Prinzip", "im Endeffekt", "sagen wir mal", "sag ich mal", "und so", "und so weiter", "wie gesagt", "ne", "nech", "gell", "oder"],
+      "en": ["you know", "I mean", "sort of", "kind of", "sorta", "kinda", "or something", "or whatever", "if you will", "at the end of the day"],
+      "tag_question_only": ["ne", "nech", "gell", "oder"]
+    },
+
+    "tier_c": {
+      "_comment": "German modal particles and their English discourse-marker cousins. FLAG ONLY, in every profile, forever. 'Das ist halt so' does not mean 'Das ist so'; 'Also, fangen wir an' loses its connector. Removing these produces German that is tonally wrong or outright ungrammatical, and the damage is invisible in a transcript diff.",
+      "de": ["also", "halt", "eben", "ja", "mal", "doch", "schon", "nun", "so", "einfach", "eigentlich", "natürlich", "genau", "praktisch", "letztendlich", "irgendwie", "tja", "naja", "na ja", "gut", "okay"],
+      "en": ["like", "just", "well", "right", "so", "basically", "actually", "literally", "obviously", "honestly", "anyway", "okay"]
+    },
+
+    "restart_markers": {
+      "_comment": "An explicit restart cue. A marker match is a large score bonus for retake detection; marker plus near-duplicate is a near-certain retake.",
+      "de": ["nochmal", "noch mal", "quatsch", "ich mein", "ich meine", "neuer Versuch", "Take zwei", "äh nein", "nein nein", "moment", "stopp"],
+      "en": ["sorry", "let me try that again", "take two", "again", "one more time", "cut", "hold on", "scratch that", "start over", "let me redo that"]
+    },
+
+    "sentence_end_punctuation": ".?!",
+    "clause_punctuation": ",;:"
+  },
+
+  "profiles": {
+
+    "conservative": {
+      "name": "conservative",
+      "description": "Cuts less, keeps more breath. Use on interviews, emotional material, anything where a wrongly removed pause reads as rudeness. Tier B fillers are demoted to flag-only, so nothing lexical is ever removed without a human.",
+      "calibrated": false,
+      "calibrated_against": null,
+      "_derivation": "CONTRACT section 8 defaults widened: pads +50 %, min_gap +0.30 s, min_clip nearly doubled, cut density halved.",
+
+      "silence": {
+        "min_gap_s": 0.85,
+        "min_removal_s": 0.35,
+        "keep_pause_floor_s": 0.28,
+        "pad_in_s": 0.12,
+        "pad_out_s": 0.15,
+        "max_cut_density_s": 2.5,
+        "min_clip_s": 0.60,
+        "pause_tiers": [
+          { "gap_below_s": 0.85, "retained_s": null, "action": "untouched" },
+          { "gap_below_s": 1.50, "retained_s": 0.45, "action": "shorten" },
+          { "gap_below_s": 3.00, "retained_s": 0.60, "action": "shorten" },
+          { "gap_below_s": null, "retained_s": 0.80, "action": "shorten", "flag_for_review": true }
+        ],
+        "punctuation_scale": {
+          "sentence": { "mult": 1.5, "min_s": 0.50 },
+          "clause": { "mult": 1.0, "min_s": 0.30 },
+          "mid_clause": { "mult": 0.7, "min_s": 0.28 },
+          "topic_change": { "mult": 2.0, "min_s": 0.80 }
+        }
+      },
+
+      "fillers": {
+        "tier_a": { "policy": "auto_remove" },
+        "tier_b": {
+          "policy": "flag_only",
+          "_comment": "Demoted from the contract default. On this profile a lexical filler is a human decision."
+        },
+        "tier_c": { "policy": "flag_only" },
+        "signals": {
+          "order": ["lexical", "dur_per_char", "flank_gap", "energy"],
+          "dur_per_char_s": 0.14,
+          "flank_gap_s": 0.12,
+          "energy_within_db": 6.0,
+          "require_for_tier_a": "lexical AND (dur_per_char OR flank_gap)",
+          "require_for_tier_b": "all four"
+        },
+        "density_guard": { "window_s": 5.0, "max_removed_token_pct": 20.0, "action": "flag_stretch" },
+        "never_use_alignment_score_as_filler_signal": true
+      },
+
+      "alignment_confidence": {
+        "low_score": 0.35,
+        "widen_pad_ms": 90,
+        "forbid_cut_inside": true
+      },
+
+      "retakes": {
+        "interruption_gap_s": 0.45,
+        "ngram_max": 8,
+        "ngram_min": 4,
+        "trigram_requires_exact_match": true,
+        "similarity_propose": 0.78,
+        "similarity_auto": 0.92,
+        "extend_left_to_sentence_start": true,
+        "left_boundary_gap_s": 0.8,
+        "sentence_cosine": 0.85,
+        "sentence_window_s": 120,
+        "later_run_min_word_pct": 95,
+        "on_supersede": { "enabled": false, "reason": "retake_superseded", "keep_alternatives": true }
+      },
+
+      "splice": {
+        "crossfade_ms": 30,
+        "crossfade_min_ms": 10,
+        "crossfade_max_ms": 40,
+        "curve_same_take": "tri",
+        "curve_across_takes": "qsin",
+        "zero_cross_search_ms": 5,
+        "zero_cross_search_samples": 240,
+        "fade_in_ms": 25,
+        "fade_out_ms": 25
+      },
+
+      "jl_cuts": {
+        "enabled": false,
+        "default_frames": 6,
+        "min_frames": 4,
+        "max_frames": 12,
+        "require_cover_when_same_source": true
+      }
+    },
+
+    "balanced": {
+      "name": "balanced",
+      "description": "The CONTRACT section 8 defaults, verbatim. The starting point for long-form talking head. Tier B fillers auto-remove under guards; tier C is flagged only.",
+      "calibrated": false,
+      "calibrated_against": null,
+      "_derivation": "Every value in 'silence', 'splice' and 'jl_cuts' is copied from CONTRACT section 8 without modification. The pause_tiers table and the retake numbers come from research track 3 and are that track's own design, self-flagged as never perceptually tested.",
+
+      "silence": {
+        "_comment": "pad_in covers the plosive closure before /p t k b d g/, which is silent but audibly missing if you cut into it. pad_out is larger because /t k s/ releases run PAST the WhisperX word end.",
+        "min_gap_s": 0.55,
+        "min_removal_s": 0.20,
+        "keep_pause_floor_s": 0.18,
+        "pad_in_s": 0.08,
+        "pad_out_s": 0.10,
+        "max_cut_density_s": 1.5,
+        "min_clip_s": 0.35,
+        "pause_tiers": [
+          { "gap_below_s": 0.55, "retained_s": null, "action": "untouched" },
+          { "gap_below_s": 1.20, "retained_s": 0.30, "action": "shorten" },
+          { "gap_below_s": 3.00, "retained_s": 0.45, "action": "shorten", "_comment": "reads as a deliberate beat" },
+          { "gap_below_s": null, "retained_s": 0.60, "action": "shorten", "flag_for_review": true, "_comment": "usually a retake boundary or the speaker checking notes" }
+        ],
+        "punctuation_scale": {
+          "_comment": "A flat retained pause makes a clause boundary and a topic change sound identical. Scale by the punctuation of the PRECEDING word.",
+          "sentence": { "mult": 1.5, "min_s": 0.40 },
+          "clause": { "mult": 1.0, "min_s": 0.20 },
+          "mid_clause": { "mult": 0.7, "min_s": 0.20 },
+          "topic_change": { "mult": 2.0, "min_s": 0.60 }
+        }
+      },
+
+      "fillers": {
+        "tier_a": { "policy": "auto_remove" },
+        "tier_b": {
+          "policy": "auto_remove_guarded",
+          "guards": {
+            "min_flank_gap_ms": 60,
+            "forbid_dangling_connector": true,
+            "max_removals_per_output_s": 4.0
+          }
+        },
+        "tier_c": {
+          "policy": "flag_only",
+          "_comment": "CONTRACT section 8, hard rule: modal particles are NEVER auto-removed, in any profile. Route flagged instances to an LLM with +-2 sentences of context and the question 'does removing this change the meaning, the register, or leave it ungrammatical?'"
+        },
+        "signals": {
+          "_comment": "Signal ORDER matters and 'score' is not in it. WhisperX's score is an ALIGNMENT score - low means the audio does not match those letters, which correlates with rare words and proper nouns, i.e. the exact opposite of a filler.",
+          "order": ["lexical", "dur_per_char", "flank_gap", "energy"],
+          "dur_per_char_s": 0.12,
+          "flank_gap_s": 0.10,
+          "energy_within_db": 6.0,
+          "require_for_tier_a": "lexical AND (dur_per_char OR flank_gap)",
+          "require_for_tier_b": "all four"
+        },
+        "density_guard": {
+          "_comment": "If you would remove more than a quarter of the tokens in any 5 s window, the speaker was struggling. Flag the whole stretch for a retake or B-roll cover; surgically shaving it reads as unnaturally dense.",
+          "window_s": 5.0,
+          "max_removed_token_pct": 25.0,
+          "action": "flag_stretch"
+        },
+        "never_use_alignment_score_as_filler_signal": true
+      },
+
+      "alignment_confidence": {
+        "_comment": "The only legitimate use of WhisperX score: a timestamp-reliability flag.",
+        "low_score": 0.35,
+        "widen_pad_ms": 60,
+        "forbid_cut_inside": true
+      },
+
+      "retakes": {
+        "interruption_gap_s": 0.35,
+        "ngram_max": 8,
+        "ngram_min": 3,
+        "trigram_requires_exact_match": true,
+        "similarity_propose": 0.72,
+        "similarity_auto": 0.85,
+        "extend_left_to_sentence_start": true,
+        "left_boundary_gap_s": 0.8,
+        "sentence_cosine": 0.80,
+        "sentence_window_s": 120,
+        "later_run_min_word_pct": 90,
+        "on_supersede": {
+          "_comment": "Never delete. enabled:false plus reason and an alternatives:[seg_ids] array, so a human flips one boolean. Text-only disfluency detection tops out around F 86-91 % on English benchmarks, so expect roughly one miss or false fire per ten disfluencies - which is exactly why this must be reversible.",
+          "enabled": false,
+          "reason": "retake_superseded",
+          "keep_alternatives": true
+        }
+      },
+
+      "splice": {
+        "crossfade_ms": 20,
+        "crossfade_min_ms": 10,
+        "crossfade_max_ms": 40,
+        "curve_same_take": "tri",
+        "curve_across_takes": "qsin",
+        "zero_cross_search_ms": 5,
+        "zero_cross_search_samples": 240,
+        "_comment_zero_cross": "240 samples = 5 ms at 48 kHz. Audio only - the zero-crossing nudge is sub-frame and must NEVER move the video edit point.",
+        "fade_in_ms": 20,
+        "fade_out_ms": 20
+      },
+
+      "jl_cuts": {
+        "_comment": "CONTRACT section 8: reject any J/L cut where both sides share a source_id and neither side is covered by B-roll or a full-frame overlay. On a visible mouth, a J/L cut is just lip-sync error.",
+        "enabled": true,
+        "default_frames": 6,
+        "min_frames": 4,
+        "max_frames": 12,
+        "require_cover_when_same_source": true
+      }
+    },
+
+    "aggressive": {
+      "name": "aggressive",
+      "description": "Tighter, for short form. Pauses are shortened hard, small gaps get cut, tier B fillers go without the density guard. Expect it to sound relentless on long-form - that is the intended trade for a 30-second vertical clip.",
+      "calibrated": false,
+      "calibrated_against": null,
+      "_derivation": "CONTRACT section 8 defaults tightened: pads roughly -40 %, min_gap down to 0.35 s, cut density nearly doubled. Tier C stays flag-only because that is a correctness rule, not an aggressiveness dial.",
+
+      "silence": {
+        "min_gap_s": 0.35,
+        "min_removal_s": 0.12,
+        "keep_pause_floor_s": 0.10,
+        "pad_in_s": 0.05,
+        "pad_out_s": 0.07,
+        "_comment_pad_out": "0.07 s is below the contract default and is the first thing to raise if cuts start sounding clipped on /t k s/.",
+        "max_cut_density_s": 0.8,
+        "min_clip_s": 0.25,
+        "pause_tiers": [
+          { "gap_below_s": 0.35, "retained_s": null, "action": "untouched" },
+          { "gap_below_s": 1.00, "retained_s": 0.14, "action": "shorten" },
+          { "gap_below_s": 3.00, "retained_s": 0.22, "action": "shorten" },
+          { "gap_below_s": null, "retained_s": 0.35, "action": "shorten", "flag_for_review": true }
+        ],
+        "punctuation_scale": {
+          "sentence": { "mult": 1.5, "min_s": 0.22 },
+          "clause": { "mult": 1.0, "min_s": 0.12 },
+          "mid_clause": { "mult": 0.7, "min_s": 0.10 },
+          "topic_change": { "mult": 2.0, "min_s": 0.35 }
+        }
+      },
+
+      "fillers": {
+        "tier_a": { "policy": "auto_remove" },
+        "tier_b": {
+          "policy": "auto_remove_guarded",
+          "guards": {
+            "min_flank_gap_ms": 40,
+            "forbid_dangling_connector": true,
+            "max_removals_per_output_s": 2.0
+          }
+        },
+        "tier_c": {
+          "policy": "flag_only",
+          "_comment": "Still flag-only. CONTRACT section 8 makes this unconditional - 'aggressive' is allowed to cut more silence, never to change what a sentence means."
+        },
+        "signals": {
+          "order": ["lexical", "dur_per_char", "flank_gap", "energy"],
+          "dur_per_char_s": 0.10,
+          "flank_gap_s": 0.08,
+          "energy_within_db": 8.0,
+          "require_for_tier_a": "lexical",
+          "require_for_tier_b": "lexical AND (dur_per_char OR flank_gap)"
+        },
+        "density_guard": { "window_s": 5.0, "max_removed_token_pct": 40.0, "action": "flag_stretch" },
+        "never_use_alignment_score_as_filler_signal": true
+      },
+
+      "alignment_confidence": {
+        "low_score": 0.35,
+        "widen_pad_ms": 60,
+        "forbid_cut_inside": true,
+        "_comment": "Unchanged across profiles. A low score means the timestamp itself is untrustworthy; being in a hurry does not make it trustworthy."
+      },
+
+      "retakes": {
+        "interruption_gap_s": 0.30,
+        "ngram_max": 8,
+        "ngram_min": 3,
+        "trigram_requires_exact_match": true,
+        "similarity_propose": 0.68,
+        "similarity_auto": 0.80,
+        "extend_left_to_sentence_start": true,
+        "left_boundary_gap_s": 0.6,
+        "sentence_cosine": 0.78,
+        "sentence_window_s": 120,
+        "later_run_min_word_pct": 85,
+        "on_supersede": { "enabled": false, "reason": "retake_superseded", "keep_alternatives": true }
+      },
+
+      "splice": {
+        "crossfade_ms": 15,
+        "crossfade_min_ms": 10,
+        "crossfade_max_ms": 40,
+        "curve_same_take": "tri",
+        "curve_across_takes": "qsin",
+        "zero_cross_search_ms": 5,
+        "zero_cross_search_samples": 240,
+        "fade_in_ms": 15,
+        "fade_out_ms": 15
+      },
+
+      "jl_cuts": {
+        "enabled": true,
+        "default_frames": 4,
+        "min_frames": 4,
+        "max_frames": 12,
+        "require_cover_when_same_source": true
+      }
+    }
+  }
+}

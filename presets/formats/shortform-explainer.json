@@ -1,0 +1,75 @@
+{
+  "_comment": "Vertical explainer: 1080x1920, graphics own the TOP half, the speaker owns the BOTTOM half, captions run in the MIDDLE band on the seam between them. The split is the format's whole argument - the viewer reads the graphic and hears the explanation without either one being decoration.",
+  "_schema": "presets/formats/*.json v1",
+  "_usage": "Project.create(root, slug, preset) deep-merges this over the skeleton in vedit/project.py: dicts merge, lists replace wholesale, project_id / created_utc / schema_version / _computed are dropped. Keys beginning with '_' are documentation and MUST be ignored by consumers.",
+
+  "name": "shortform-explainer",
+  "format_preset": "shortform-explainer",
+  "description": "9:16 explainer. Graphics top half, speaker bottom half, captions in the middle band.",
+
+  "output": {
+    "platform": "tiktok",
+    "path": "out/final.mp4",
+    "resolution": [1080, 1920],
+    "v_codec": "h264_nvenc",
+    "cq": 21,
+    "preset": "p6",
+    "a_codec": "aac",
+    "a_bitrate": "256k",
+    "loudnorm": { "I": -14, "TP": -1.0, "LRA": 9 }
+  },
+  "_comment_platform": "Defaults to tiktok because it has the most restrictive safe area of the three vertical platforms - anything laid out for it is safe on Reels and Shorts. Retargeting is a one-line edit of output.platform plus a re-copy of that platform's loudnorm block from presets/platforms.json.",
+  "_comment_loudnorm": "Copied from presets/platforms.json -> tiktok.loudnorm. Duplicated into the project on purpose: an already-mastered project must not silently re-target because platforms.json changed later. LRA 9 rather than 11 because the median listener is on a phone speaker in a noisy room, where wide dynamics just become inaudible passages.",
+  "_comment_bitrate": "256k and cq 21 rather than long form's 320k/20: the platform re-encodes this hard anyway, and a 60-second vertical clip gains nothing from the extra bits.",
+
+  "timebase": { "fps_num": 30, "fps_den": 1, "sample_rate": 48000 },
+
+  "cut_profile": "aggressive",
+  "_comment_cut_profile": "Short form earns the tighter thresholds - see presets/cut-profiles.json. Uncalibrated, like every other number in presets/.",
+
+  "captions": {
+    "enabled": true,
+    "burn_in": true,
+    "preset": "shortform-highlight",
+    "sidecar_path": "out/captions.ass",
+    "overrides": []
+  },
+  "_comment_captions": "ON, always. The feed autoplays muted; without burned-in captions the first three seconds carry no information at all. Note the transcript may spell numerals as words (WhisperX runs with --suppress_numerals so that numerals cannot break word alignment), so '20' arrives as 'zwanzig' - fix it with a captions.overrides entry rather than by re-transcribing.",
+
+  "layout": {
+    "_comment": "Regions are percentages of the output frame. The two halves meet exactly at y=50 %, and the caption band is centred on that seam, which is what stops the join from reading as a visible line.",
+    "canvas": [1080, 1920],
+    "regions": {
+      "graphics": {
+        "x_pct": 0.0, "y_pct": 0.0, "w_pct": 100.0, "h_pct": 50.0,
+        "fit": "contain",
+        "_comment_fit": "contain, not cover: a graphic is information and must not be cropped. Anything left over shows the background colour.",
+        "background": "#0B0D10",
+        "layer": 5,
+        "padding_pct": { "top": 8.0, "bottom": 6.0, "left": 6.0, "right": 6.0 },
+        "_comment_padding": "top 8 % keeps the graphic clear of the platform's search and live badges - see platforms.tiktok.safe_area_pct."
+      },
+      "speaker": {
+        "x_pct": 0.0, "y_pct": 50.0, "w_pct": 100.0, "h_pct": 50.0,
+        "fit": "cover",
+        "_comment_fit": "cover, and framed on the face. A 16:9 source scaled to fill a 1080x960 box loses the sides; frame for that when shooting, or set crop_bias.",
+        "crop_bias": { "x_pct": 50.0, "y_pct": 35.0 },
+        "_comment_crop_bias": "Bias the crop upward so the eyeline sits in the upper third of the bottom half rather than dead centre.",
+        "layer": 0
+      }
+    },
+    "graphics_mode": "region",
+    "_comment_graphics_mode": "'region' not 'overlay': a graphic here fills its half of the frame instead of floating over the speaker. Overlays are still anchored to {segment_id, offset_frames} and never to an absolute timeline frame.",
+    "captions_region": {
+      "_comment": "The middle band. build_ass emits \\pos at the centre point; the block grows symmetrically about the seam as lines are added. Wider than platforms.tiktok.safe_area_pct would allow on the right - legitimate here only because the band sits at 43-57 % height, above where the action rail begins.",
+      "x_pct": 0.0, "y_pct": 43.0, "w_pct": 100.0, "h_pct": 14.0,
+      "centre_pct": [50.0, 50.0],
+      "layer": 20
+    },
+    "background": "#0B0D10",
+    "safe_area_source": "presets/platforms.json"
+  },
+
+  "hook": null,
+  "_comment_hook": "No separate hook card - the first graphic in the top half IS the hook. Give it the strongest line in the script and make sure it lands inside the first 1.5 s."
+}

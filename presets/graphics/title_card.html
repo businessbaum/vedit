@@ -1,0 +1,158 @@
+<!--
+  title_card.html -- full-frame chapter / section title with an alpha scrim.
+
+  PURE FUNCTION OF ?t=<seconds> (CONTRACT invariant 6). No @keyframes, no
+  transition, no requestAnimationFrame: the kernel reads t, computes every
+  animated value once, writes it, and stops. Chrome's --screenshot has no
+  virtual clock, so a self-animating page would be captured at an arbitrary
+  moment and the frame cache would serve pixels that no longer match its key.
+
+  Query parameters (written by vedit.gfx.frame_params):
+    t seconds | d duration | f frame | n frames | w,h size | p JSON props
+
+  props: { kicker, title, subtitle, layout: "left"|"center", scrim: 0..1 }
+-->
+<link rel="stylesheet" href="_base.css" />
+<title>Title Card</title>
+
+<style>
+  /* The scrim is the only thing that makes a title card legible over unknown
+     footage. It is a graduated wash rather than a flat fill so the shot stays
+     readable behind it. */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(102deg, rgba(11, 14, 19, 0.93) 0%, rgba(11, 14, 19, 0.86) 30%, rgba(11, 14, 19, 0.34) 66%, var(--ink-00) 88%),
+      linear-gradient(0deg, rgba(11, 14, 19, 0.42) 0%, var(--ink-00) 40%);
+    opacity: var(--scrim-o, 0);
+  }
+  .tc {
+    position: absolute;
+    inset: var(--safe-y) var(--safe-x);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: calc(var(--u) * 1.1);
+  }
+  .tc[data-layout="center"] {
+    align-items: center;
+    text-align: center;
+  }
+  @media (max-aspect-ratio: 1/1) {
+    .tc {
+      justify-content: flex-start;
+      padding-top: 14%;
+    }
+    .tc-title {
+      max-width: 14ch;
+    }
+  }
+  .tc-title {
+    font-size: calc(var(--u) * 6.2);
+    letter-spacing: calc(var(--u) * -0.11);
+    max-width: 20ch;
+  }
+  .tc[data-layout="center"] .tc-title {
+    max-width: 24ch;
+  }
+  .tc-sub {
+    font-size: calc(var(--u) * 1.85);
+    max-width: 42ch;
+    color: rgba(246, 248, 251, 0.72);
+  }
+  .tc-rule {
+    height: calc(var(--u) * 0.22);
+    width: calc(var(--u) * 9);
+    background: var(--accent);
+    border-radius: calc(var(--u) * 0.11);
+    transform-origin: left center;
+    transform: scaleX(var(--rule-p, 0));
+  }
+  .tc[data-layout="center"] .tc-rule {
+    transform-origin: center;
+  }
+  .row {
+    opacity: var(--o, 1);
+    transform: translateY(var(--y, 0px));
+  }
+</style>
+
+<div class="stage">
+  <div class="scrim" id="scrim"></div>
+  <div class="tc" id="tc">
+    <span class="kicker row" id="kicker"></span>
+    <div class="title tc-title row" id="title"></div>
+    <div class="tc-rule" id="rule"></div>
+    <div class="subtitle tc-sub row" id="sub"></div>
+  </div>
+</div>
+
+<script>
+  // --- the t-kernel ---------------------------------------------------------
+  // Duplicated in each template on purpose: a template is meant to be copied to
+  // make a new one, and a graphic that carries its own clock cannot be broken
+  // by an edit to somebody else's file.
+  (function () {
+    var q = new URLSearchParams(location.search);
+    var t = parseFloat(q.get("t") || "0");
+    var d = parseFloat(q.get("d") || "0");
+    var props = {};
+    try {
+      props = JSON.parse(q.get("p") || "{}");
+    } catch (e) {
+      props = {};
+    }
+
+    var IN = 0.6;
+    var OUT = 0.45;
+    var clamp = function (v) {
+      return v < 0 ? 0 : v > 1 ? 1 : v;
+    };
+    var outCubic = function (p) {
+      return 1 - Math.pow(1 - clamp(p), 3);
+    };
+    var exit = d > 0 ? outCubic((d - t) / OUT) : 1;
+    var enter = function (delay, dur) {
+      return outCubic((t - delay) / (dur || IN));
+    };
+
+    var el = function (id) {
+      return document.getElementById(id);
+    };
+    var text = function (id, value) {
+      var node = el(id);
+      if (value === undefined || value === null || value === "") {
+        node.style.display = "none";
+        return false;
+      }
+      node.textContent = String(value);
+      return true;
+    };
+
+    text("kicker", props.kicker);
+    text("title", props.title || "");
+    text("sub", props.subtitle);
+    el("tc").setAttribute("data-layout", props.layout === "center" ? "center" : "left");
+    if (props.accent) document.documentElement.style.setProperty("--accent", props.accent);
+
+    var scrimMax = props.scrim === undefined ? 1 : Number(props.scrim);
+    el("scrim").style.setProperty("--scrim-o", (scrimMax * Math.min(enter(0, 0.5), exit)).toFixed(4));
+
+    // The rule wipes out slightly ahead of the text, so the block reads as one
+    // object leaving rather than three elements fading independently.
+    el("rule").style.setProperty("--rule-p", Math.min(enter(0.22, 0.5), exit).toFixed(4));
+
+    var rows = [
+      ["kicker", 0.1],
+      ["title", 0.16],
+      ["sub", 0.3]
+    ];
+    for (var i = 0; i < rows.length; i++) {
+      var p = Math.min(enter(rows[i][1]), exit);
+      var node = el(rows[i][0]);
+      node.style.setProperty("--o", p.toFixed(4));
+      node.style.setProperty("--y", ((1 - p) * 1.6).toFixed(3) + "vh");
+    }
+  })();
+</script>

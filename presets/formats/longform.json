@@ -1,0 +1,64 @@
+{
+  "_comment": "Long-form talking head for YouTube: 1920x1080, 30 fps, captions OFF, graphics as overlays on a full-frame speaker. This is the default format and the one the project skeleton already matches, so almost nothing here is an override - it is written out in full anyway, because a preset you have to diff against a Python skeleton to understand is not a preset.",
+  "_schema": "presets/formats/*.json v1",
+  "_usage": "Project.create(root, slug, preset) deep-merges this document over the skeleton in vedit/project.py: dicts merge, lists replace wholesale, and project_id / created_utc / schema_version / _computed are dropped. So every key here lands in project.json - including 'layout' and 'cut_profile', which are additive fields the render and cut stages read. Keys beginning with '_' are documentation and MUST be ignored by consumers.",
+
+  "name": "longform",
+  "format_preset": "longform",
+  "description": "16:9 long form. Full-frame speaker, overlay graphics, YouTube loudness, no burned-in captions.",
+
+  "output": {
+    "platform": "youtube",
+    "path": "out/final.mp4",
+    "resolution": [1920, 1080],
+    "v_codec": "h264_nvenc",
+    "cq": 20,
+    "preset": "p6",
+    "a_codec": "aac",
+    "a_bitrate": "320k",
+    "loudnorm": { "I": -14, "TP": -1.5, "LRA": 11 }
+  },
+  "_comment_loudnorm": "Copied from presets/platforms.json -> youtube.loudnorm. It is duplicated into the project on creation on purpose: a project that has already been mastered must not silently re-target because someone edited platforms.json afterwards. QC check (f) compares the rendered master against THIS value.",
+
+  "timebase": { "fps_num": 30, "fps_den": 1, "sample_rate": 48000 },
+  "_comment_timebase": "Integer 30 fps, not 30000/1001. Intake mandatorily transcodes every source to this CFR rate, which is what makes src_*_frames unambiguous across mixed-rate cameras.",
+
+  "cut_profile": "balanced",
+  "_comment_cut_profile": "Names a profile in presets/cut-profiles.json. 'balanced' is the CONTRACT section 8 defaults verbatim - uncalibrated, like everything else in presets/.",
+
+  "captions": {
+    "enabled": false,
+    "burn_in": true,
+    "preset": "longform-subtle",
+    "sidecar_path": "out/captions.ass",
+    "overrides": []
+  },
+  "_comment_captions": "OFF by default. A 16:9 video on a desktop player has YouTube's own CC track and does not autoplay muted, so burned-in captions mostly cost you the lower third. Flip enabled:true when the cut is also going to a muted feed - the preset is ready either way. Note burn_in stays true: if captions are on at all in this pipeline they are burned, because a sidecar .ass is not what gets uploaded.",
+
+  "layout": {
+    "_comment": "How the frame is composed. Long form is the trivial case: one full-frame speaker with graphics floated over it. Regions are percentages of the output frame so the block survives a resolution change.",
+    "canvas": [1920, 1080],
+    "regions": {
+      "speaker": {
+        "x_pct": 0.0, "y_pct": 0.0, "w_pct": 100.0, "h_pct": 100.0,
+        "fit": "cover",
+        "layer": 0
+      }
+    },
+    "graphics": {
+      "mode": "overlay",
+      "_comment": "Graphics float over the speaker rather than owning a region. Anchored to {segment_id, offset_frames} in overlays[], never to an absolute timeline frame, so a re-cut upstream does not desync them.",
+      "default_template": "presets/graphics/lower_third.html",
+      "default_layer": 10,
+      "default_region": { "x_pct": 5.0, "y_pct": 66.0, "w_pct": 55.0, "h_pct": 22.0 },
+      "full_frame_region": { "x_pct": 0.0, "y_pct": 0.0, "w_pct": 100.0, "h_pct": 100.0 }
+    },
+    "captions_region": null,
+    "_comment_captions_region": "null = the caption preset's own margins decide. Only the band layouts (shortform-explainer) override placement here.",
+    "background": "#000000",
+    "safe_area_source": "presets/platforms.json"
+  },
+
+  "hook": null,
+  "_comment_hook": "No text hook. Long form opens on the speaker; a burned-in hook card belongs to the vertical formats."
+}

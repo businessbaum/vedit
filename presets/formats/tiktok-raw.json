@@ -1,0 +1,83 @@
+{
+  "_comment": "Raw vertical cut: 1080x1920, full-frame speaker, one text hook pinned to the top of the frame for the opening seconds, bold burned-in captions, and nothing else. No lower thirds, no B-roll, no region split. The format exists because the polished version of this footage performs worse than the unpolished one.",
+  "_schema": "presets/formats/*.json v1",
+  "_usage": "Project.create(root, slug, preset) deep-merges this over the skeleton in vedit/project.py: dicts merge, lists replace wholesale, project_id / created_utc / schema_version / _computed are dropped. Keys beginning with '_' are documentation and MUST be ignored by consumers.",
+
+  "name": "tiktok-raw",
+  "format_preset": "tiktok-raw",
+  "description": "9:16 raw cut. Full-frame speaker, text hook at the top, bold captions, no graphics.",
+
+  "output": {
+    "platform": "tiktok",
+    "path": "out/final.mp4",
+    "resolution": [1080, 1920],
+    "v_codec": "h264_nvenc",
+    "cq": 21,
+    "preset": "p6",
+    "a_codec": "aac",
+    "a_bitrate": "256k",
+    "loudnorm": { "I": -14, "TP": -1.0, "LRA": 9 }
+  },
+  "_comment_loudnorm": "Copied from presets/platforms.json -> tiktok.loudnorm and frozen into the project on creation, so a later edit to platforms.json cannot silently re-target an already-mastered video. QC check (f) measures the master against THIS block.",
+
+  "timebase": { "fps_num": 30, "fps_den": 1, "sample_rate": 48000 },
+
+  "cut_profile": "aggressive",
+  "_comment_cut_profile": "See presets/cut-profiles.json. Note 'aggressive' still flags rather than removes German modal particles - CONTRACT section 8 makes that unconditional, and on raw vertical material the particles are most of what makes it sound like a person.",
+
+  "captions": {
+    "enabled": true,
+    "burn_in": true,
+    "preset": "tiktok-bold",
+    "sidecar_path": "out/captions.ass",
+    "overrides": []
+  },
+  "_comment_captions": "ON, always - the feed autoplays muted. WhisperX runs with --suppress_numerals, so numerals arrive spelled out ('zwanzig', not '20'); correct them with captions.overrides entries rather than by re-transcribing.",
+
+  "layout": {
+    "_comment": "One region. The hook is an overlay on top of it, not a region split - the speaker keeps the whole frame and the hook sits over the head-room above them.",
+    "canvas": [1080, 1920],
+    "regions": {
+      "speaker": {
+        "x_pct": 0.0, "y_pct": 0.0, "w_pct": 100.0, "h_pct": 100.0,
+        "fit": "cover",
+        "crop_bias": { "x_pct": 50.0, "y_pct": 42.0 },
+        "_comment_crop_bias": "Bias upward so the face sits above centre and leaves the bottom third to the captions.",
+        "layer": 0
+      }
+    },
+    "graphics_mode": "none",
+    "_comment_graphics_mode": "No graphics lane for this format. If a shot needs a diagram it is the wrong format - use shortform-explainer.",
+    "captions_region": null,
+    "_comment_captions_region": "null = the tiktok-bold preset's own margins decide, and those come straight from platforms.tiktok.caption_safe_area_pct.",
+    "background": "#000000",
+    "safe_area_source": "presets/platforms.json"
+  },
+
+  "hook": {
+    "_comment": "A single text card pinned near the top of the frame for the opening beat. The story stage writes the actual line into overlays[] as a normal overlay record anchored to {segment_id: <first enabled segment>, offset_frames: 0} - this block is only the shape and the styling it should use.",
+    "enabled": true,
+    "template": "presets/graphics/text_hook.html",
+    "_comment_template": "Must be a pure function of ?t=<seconds> - no CSS animations, no requestAnimationFrame. That is what makes the Chrome screenshot lane deterministic and therefore cacheable.",
+    "duration_frames": 90,
+    "_comment_duration": "90 frames = 3.0 s at 30 fps. Long enough to read twice, short enough to be gone before the payoff.",
+    "layer": 30,
+    "region": { "x_pct": 6.0, "y_pct": 10.0, "w_pct": 88.0, "h_pct": 16.0 },
+    "_comment_region": "y 10 % clears platforms.tiktok.safe_area_pct.top (8 %) with a little margin. Width 88 % is fine at this height: the action rail does not start until roughly 55 % down the frame.",
+    "props": {
+      "text": "",
+      "_comment_text": "Empty on creation. The story stage fills it - and it is the single highest-leverage string in the whole document.",
+      "font_file": "assets/fonts/Montserrat-ExtraBold.ttf",
+      "font_family": "Montserrat ExtraBold",
+      "font_px": 84,
+      "uppercase": true,
+      "colour": "#FFFFFF",
+      "background": "#000000CC",
+      "outline_px": 0,
+      "corner_radius_px": 18,
+      "max_lines": 3,
+      "align": "center"
+    },
+    "_comment_font": "The hook is rendered by Chrome from HTML, not by libass, so it loads the file with @font-face from a file:/// URL. The family string still matches the ASS Fontname so the hook and the captions are visibly the same typeface."
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "_comment": "Captions for the shortform-explainer format: 1080x1920, graphics in the TOP half, speaker in the BOTTOM half, and these captions in the MIDDLE band straddling the seam between them. The band is the whole point - it gives the seam a job instead of leaving a visible join, and it sits above TikTok's action rail, which only starts around y=55 %.",
+  "_schema": "presets/captions/*.json v1",
+  "_usage": "vedit/captions.py: build_ass(words, project, preset). Values under 'ass_style' are ASS field names and go straight through. Keys beginning with '_' are documentation and MUST be ignored.",
+
+  "name": "shortform-highlight",
+  "calibrated": false,
+  "calibrated_against": null,
+
+  "play_res": [1080, 1920],
+  "_comment_play_res": "PlayResX/PlayResY MUST equal the render resolution, or every px value below is scaled by libass and the width budget stops meaning pixels.",
+
+  "font": {
+    "_comment": "Static ExtraBold file, not a variable font. ASS cannot select a weight axis, so a variable Inter would render Regular plus faux-bold no matter what the style says - and it would do it silently, exit 0.",
+    "file": "assets/fonts/Inter-ExtraBold.ttf",
+    "fontsdir": "assets/fonts",
+    "ass_fontname": "Inter ExtraBold",
+    "ass_bold": 0,
+    "_comment_bold": "Bold=0. The weight comes from the file; asking for Bold=-1 on top would be faux-bold over a real 800."
+  },
+
+  "ass_style": {
+    "_comment": "Colours are ASS &HAABBGGRR - reversed byte order, alpha 00 = fully opaque. BackColour is a 60 %-opaque black plate used only if BorderStyle is switched to 3.",
+    "Name": "Default",
+    "Fontname": "Inter ExtraBold",
+    "Fontsize": 64,
+    "PrimaryColour": "&H00FFFFFF",
+    "SecondaryColour": "&H0000D4FF",
+    "OutlineColour": "&H00000000",
+    "BackColour": "&H99000000",
+    "Bold": 0,
+    "Italic": 0,
+    "Underline": 0,
+    "StrikeOut": 0,
+    "ScaleX": 100,
+    "ScaleY": 100,
+    "Spacing": 0,
+    "Angle": 0,
+    "BorderStyle": 1,
+    "Outline": 5,
+    "Shadow": 2,
+    "Alignment": 5,
+    "MarginL": 54,
+    "MarginR": 54,
+    "MarginV": 0,
+    "Encoding": 1
+  },
+
+  "_comment_alignment": "Alignment 5 = middle centre. With Alignment 5 libass mostly ignores MarginV, so the band position below is authoritative and build_ass must emit an explicit \\pos.",
+
+  "position": {
+    "mode": "band",
+    "_comment": "The caption band is centred on the 50 % seam between the graphics half and the speaker half. Emit \\pos(centre_x_px, centre_y_px) computed from play_res, so the block grows symmetrically about the seam as lines are added.",
+    "centre_pct": [50.0, 50.0],
+    "centre_px": [540, 960],
+    "band_top_pct": 43.0,
+    "band_bottom_pct": 57.0,
+    "band_height_px": 269,
+    "vertical_anchor": "centre"
+  },
+
+  "grouping": {
+    "_comment": "PIXEL-width budget, never max_chars: German compound nouns are single unsplittable tokens that blow any character cap. Short cards, because the band is read in peripheral vision while the graphic above it carries the argument.",
+    "width_budget_px": 900,
+    "width_budget_pct": 83.3,
+    "max_lines": 2,
+    "max_words": 7,
+    "min_duration_ms": 600,
+    "max_duration_ms": 3500,
+    "min_gap_ms": 40,
+    "lead_in_ms": 0,
+    "hold_out_ms": 100,
+    "break_on_sentence_punctuation": true,
+    "break_on_clause_punctuation": true,
+    "avoid_orphan_last_line_words": 2
+  },
+
+  "_comment_width_vs_safe_area": "900 px is wider than platforms.tiktok.safe_area_pct would allow (that inset reserves 20 % on the right for the action rail). It is safe HERE only because the band sits at 43-57 % height, above where the rail begins. A caption placed at the bottom of a 9:16 frame must use the platform inset - see tiktok-bold.",
+
+  "overflow": {
+    "single_word_policy": "shrink",
+    "min_font_px": 44,
+    "shrink_step_px": 2,
+    "then": "clip_to_budget_and_flag",
+    "_comment": "At 64 px in Inter ExtraBold a 26-character compound noun runs past 900 px, so this path fires on real German material, not just in theory."
+  },
+
+  "highlight": {
+    "_comment": "Per-word highlight, implemented as one Dialogue event per word rather than \\k karaoke. \\k needs the whole line as a single event and quantises to centiseconds, so a highlight lands up to 5 ms off the frame it belongs to; separate events snap to exact frame boundaries and survive being re-timed by a later cut.",
+    "mode": "word",
+    "implementation": "per_word_events",
+    "active_colour": "&H0000D4FF",
+    "inactive_colour": "&H00FFFFFF",
+    "active_outline_colour": "&H00000000",
+    "active_scale_pct": 106,
+    "_comment_scale": "A 6 % bump is enough to read as emphasis. More than about 110 % reflows the line and makes the block twitch.",
+    "carry_past_word_ms": 0
+  },
+
+  "safe_area": {
+    "source": "presets/platforms.json",
+    "assumed_platform": "tiktok",
+    "_comment": "The vertical formats default to the TikTok safe area because it is the most restrictive of the three vertical platforms; anything laid out for it is safe on Reels and Shorts."
+  },
+
+  "uppercase": false,
+  "strip_terminal_punctuation": true,
+  "_comment_punctuation": "Trailing full stops are dropped: on a two-word card they read as a pause that the audio does not contain. Question marks and exclamation marks are kept - they change the reading."
+}

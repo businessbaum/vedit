@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(ffmpeg *)",
+      "Bash(ffprobe *)",
+      "Bash(python engine/ve.py *)",
+      "Bash(py engine/ve.py *)",
+      "Bash(python -m vedit *)",
+      "Bash(powershell -NoProfile -File tools/ve.ps1 *)",
+      "Bash(pwsh -NoProfile -File tools/ve.ps1 *)",
+      "Bash(uv run *)",
+      "Bash(uv python list *)",
+      "Bash(uv venv *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Get-Item *)",
+      "Read(~/Videos/**)",
+      "Edit(projects/**)",
+      "Edit(presets/**)",
+      "Edit(engine/**)",
+      "Edit(docs/**)",
+      "Edit(tools/**)",
+      "Edit(.cache/**)"
+    ],
+    "ask": [
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(git reset *)",
+      "Bash(uv pip install *)",
+      "Bash(pip install *)",
+      "Bash(winget *)",
+      "Bash(npm install *)",
+      "Edit(assets/fonts/**)",
+      "Edit(.gitignore)",
+      "Edit(CLAUDE.md)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(rmdir /s *)",
+      "Bash(del /s *)",
+      "Bash(del /f *)",
+      "Bash(format *)",
+      "Bash(git clean *)",
+      "Bash(hyperframes *)",
+      "Edit(~/Videos/**)",
+      "Edit(~/.claude/**)",
+      "Edit(~/.claude.json)",
+      "Edit(//c/Windows/**)",
+      "Edit(//c/Program Files/**)",
+      "Edit(//c/Program Files (x86)/**)",
+      "Edit(//c/Python314/**)",
+      "Edit(~/AppData/**)",
+      "Read(./.env)",
+      "Read(~/.claude.json)"
+    ],
+    "additionalDirectories": [
+      "~/Videos"
+    ]
+  },
+  "env": {
+            "PYTHONUTF8": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "FFMPEG_HIDE_BANNER": "1"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-state.ps1\"",
+            "timeout": 20,
+            "statusMessage": "Reading pipeline state"
+          }
+        ]
+      }
+    ]
+  }
+}

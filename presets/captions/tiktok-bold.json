@@ -1,0 +1,101 @@
+{
+  "_comment": "Loud burned-in captions for the tiktok-raw format: 1080x1920, one to three words a card, Montserrat ExtraBold, heavy outline, positioned above TikTok's own bottom UI and left of its action rail. Designed to be read at arm's length on a phone in daylight.",
+  "_schema": "presets/captions/*.json v1",
+  "_usage": "vedit/captions.py: build_ass(words, project, preset). Values under 'ass_style' are ASS field names and go straight through. Keys beginning with '_' are documentation and MUST be ignored.",
+
+  "name": "tiktok-bold",
+  "calibrated": false,
+  "calibrated_against": null,
+
+  "play_res": [1080, 1920],
+  "_comment_play_res": "PlayResX/PlayResY MUST equal the render resolution. Otherwise libass scales and width_budget_px stops being pixels.",
+
+  "font": {
+    "_comment": "Montserrat-ExtraBold.ttf reports nameID 1 = 'Montserrat ExtraBold' (typographic family 16/17 = Montserrat/ExtraBold). Fontname must be the nameID 1 string with Bold=0; 'Montserrat' + Bold=-1 is ambiguous and can resolve to Montserrat-Bold or to a faux-bold Arial, silently, exit 0.",
+    "file": "assets/fonts/Montserrat-ExtraBold.ttf",
+    "fontsdir": "assets/fonts",
+    "ass_fontname": "Montserrat ExtraBold",
+    "ass_bold": 0
+  },
+
+  "ass_style": {
+    "_comment": "Colours are ASS &HAABBGGRR - reversed byte order, alpha 00 = fully opaque. Outline 7 at 76 px is deliberately heavy: on a busy handheld background a 3 px outline disappears.",
+    "Name": "Default",
+    "Fontname": "Montserrat ExtraBold",
+    "Fontsize": 76,
+    "PrimaryColour": "&H00FFFFFF",
+    "SecondaryColour": "&H006BE83B",
+    "OutlineColour": "&H00000000",
+    "BackColour": "&HB4000000",
+    "Bold": 0,
+    "Italic": 0,
+    "Underline": 0,
+    "StrikeOut": 0,
+    "ScaleX": 100,
+    "ScaleY": 100,
+    "Spacing": 1,
+    "Angle": 0,
+    "BorderStyle": 1,
+    "Outline": 7,
+    "Shadow": 3,
+    "Alignment": 2,
+    "MarginL": 54,
+    "MarginR": 216,
+    "MarginV": 461,
+    "Encoding": 1
+  },
+
+  "_comment_margins": "Straight out of platforms.tiktok.caption_safe_area_pct at 1080x1920: MarginL 5 % = 54, MarginR 20 % = 216 for the like/comment/share rail, MarginV 24 % = 461 to clear the username, the caption text and the nav bar. Note 24 %, not the 22 % of the graphic safe area - a burned-in caption has to clear the platform's OWN caption text, which sits above the nav bar. The asymmetric L/R margins are load-bearing: with Alignment 2 libass centres within (MarginL, PlayResX - MarginR), so the text centre lands at x=459 rather than 540, pushed clear of the rail. That offset is intentional, not a mistake.",
+
+  "position": {
+    "mode": "margin",
+    "_comment": "Bottom-anchored via Alignment 2 plus MarginV. The hook graphic owns the top of the frame - see presets/formats/tiktok-raw.json."
+  },
+
+  "grouping": {
+    "_comment": "PIXEL-width budget, never max_chars - German compound nouns are single unsplittable tokens. Cards are short because the highlight is doing the pacing: three words is a beat, seven is a paragraph nobody reads.",
+    "width_budget_px": 810,
+    "width_budget_pct": 75.0,
+    "max_lines": 2,
+    "max_words": 4,
+    "min_duration_ms": 450,
+    "max_duration_ms": 2200,
+    "min_gap_ms": 0,
+    "lead_in_ms": 0,
+    "hold_out_ms": 60,
+    "break_on_sentence_punctuation": true,
+    "break_on_clause_punctuation": false,
+    "_comment_clause": "Clause punctuation does not force a break here. At four words a card, commas would fragment the line into ones and twos and the captions would strobe.",
+    "avoid_orphan_last_line_words": 1
+  },
+
+  "overflow": {
+    "single_word_policy": "shrink",
+    "min_font_px": 52,
+    "shrink_step_px": 3,
+    "then": "clip_to_budget_and_flag",
+    "_comment": "810 px at 76 px Montserrat ExtraBold is roughly 17-19 characters. Any decent German compound noun exceeds that on its own, so this is the normal path, not the exception."
+  },
+
+  "highlight": {
+    "_comment": "Per-word highlight as separate Dialogue events, not \\k karaoke: \\k requires the whole line as one event and quantises to centiseconds, which puts the highlight up to half a frame off. Separate events land on exact frames and survive a later re-cut.",
+    "mode": "word",
+    "implementation": "per_word_events",
+    "active_colour": "&H006BE83B",
+    "inactive_colour": "&H00FFFFFF",
+    "active_outline_colour": "&H00000000",
+    "active_scale_pct": 112,
+    "carry_past_word_ms": 40,
+    "_comment_carry": "The highlight holds 40 ms past the word end so it does not flicker off during the gap before the next word."
+  },
+
+  "safe_area": {
+    "source": "presets/platforms.json",
+    "assumed_platform": "tiktok"
+  },
+
+  "uppercase": true,
+  "_comment_uppercase": "All caps. Montserrat ExtraBold at 76 px in caps reads at a glance; mixed case at four words a card looks like a subtitle rather than a beat. German nouns are capitalised anyway, so caps cost less semantic signal here than they would in English.",
+  "strip_terminal_punctuation": true,
+  "_comment_punctuation": "Terminal full stops and commas are dropped entirely - on a one-word card they are visual noise. ? and ! are kept."
+}

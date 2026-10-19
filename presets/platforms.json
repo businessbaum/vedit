@@ -1,0 +1,125 @@
+{
+  "_comment": "Per-platform delivery targets. project.json carries output.platform (youtube|tiktok|instagram|linkedin); the render and QC stages look the platform up HERE instead of hardcoding a number. Hardcoding YouTube's -14 LUFS is wrong the moment anything goes to TikTok or Instagram, and wrong in the other direction too: a master cut for a 9:16 feed has a fifth of its width covered by the platform's own UI.",
+  "_schema": "presets/platforms.json v1",
+  "_usage": "loudnorm = platforms[p]['loudnorm'] drops straight into project.json output.loudnorm (same three keys, I/TP/LRA). safe_area_pct drives caption margins and graphic placement. Keys beginning with '_' are documentation and MUST be ignored by every consumer.",
+  "_verified": false,
+  "_verification_note": "None of these numbers were measured on this machine. The loudness targets are published platform guidance plus widely reproduced community measurement; the safe areas are read off each app's own UI chrome and will drift as the apps redesign. Treat every value as a starting point. The one thing that IS verified (research track 5) is that two-pass loudnorm hits whatever target you give it exactly: a -30.0 LUFS input measured -14.0 LUFS integrated after pass 2. So the risk here is choosing the wrong target, never missing it.",
+  "_qc": "QC check (f) runs ebur128 on the master and compares against platforms[output.platform].loudnorm. A mismatch is a finding, not a crash.",
+  "_loudnorm_trap": "loudnorm pass 2 MUST carry an explicit -ar 48000 or ffmpeg silently resamples the master to 192 kHz.",
+
+  "default": "youtube",
+
+  "platforms": {
+    "youtube": {
+      "name": "YouTube",
+      "_comment": "The reference target and the CONTRACT section 3 default. YouTube normalises loud uploads down and leaves quiet ones alone, so overshooting costs you dynamics and undershooting costs you nothing but perceived level against neighbouring videos.",
+      "loudnorm": { "I": -14, "TP": -1.5, "LRA": 11 },
+      "loudness_source": "YouTube's published normalisation behaviour; TP -1.5 is headroom for the lossy transcode, which can overshoot a -1.0 dBTP master.",
+      "aspect": {
+        "name": "16:9",
+        "num": 16,
+        "den": 9,
+        "reference_resolution": [1920, 1080],
+        "accepted": ["16:9", "9:16", "1:1", "4:5"]
+      },
+      "safe_area_pct": {
+        "_comment": "Percentages of the OUTPUT frame, inset from each edge. Bottom is the large one: the scrubber, the timestamp and the CC/settings row all live there, plus end screens in the last 20 s.",
+        "top": 5.0,
+        "bottom": 10.0,
+        "left": 5.0,
+        "right": 5.0
+      },
+      "caption_safe_area_pct": {
+        "_comment": "Tighter than the graphic safe area. Burned-in captions must also clear YouTube's own CC overlay, which a viewer may have switched on over the top of yours.",
+        "top": 8.0,
+        "bottom": 12.0,
+        "left": 5.0,
+        "right": 5.0
+      },
+      "notes": "Long-form default. Chapters, cards and end screens assume 16:9."
+    },
+
+    "tiktok": {
+      "name": "TikTok",
+      "_comment": "The most restrictive safe area of the vertical platforms: the action rail (like/comment/share/sound) eats roughly a fifth of the width on the right, and the username plus caption plus the app's own nav bar eat the bottom fifth. Anything laid out for TikTok is safe on Reels and Shorts too, which is why both vertical format presets default here.",
+      "loudnorm": { "I": -14, "TP": -1.0, "LRA": 9 },
+      "loudness_source": "Community measurement of TikTok's normalisation; the platform publishes no figure. LRA is deliberately tighter than YouTube's 11 because the median listener is on a phone speaker in a noisy room, where wide dynamics simply become inaudible passages.",
+      "aspect": {
+        "name": "9:16",
+        "num": 9,
+        "den": 16,
+        "reference_resolution": [1080, 1920],
+        "accepted": ["9:16", "1:1", "16:9"]
+      },
+      "safe_area_pct": {
+        "_comment": "right is 20 % for the action rail. Note the rail is only vertically present over roughly y=55..88 %, so a mid-frame element can legitimately be wider than this inset allows - see the shortform-explainer caption band.",
+        "top": 8.0,
+        "bottom": 22.0,
+        "left": 5.0,
+        "right": 20.0
+      },
+      "caption_safe_area_pct": {
+        "top": 10.0,
+        "bottom": 24.0,
+        "left": 5.0,
+        "right": 20.0
+      },
+      "notes": "Vertical default. Hook must land in the first ~1.5 s; the top 8 % carries search and live badges."
+    },
+
+    "instagram": {
+      "name": "Instagram Reels",
+      "_comment": "Similar shape to TikTok with a heavier top bar and a slightly narrower action rail. The profile row and caption at the bottom are the reason for the 20 % bottom inset.",
+      "loudnorm": { "I": -14, "TP": -1.0, "LRA": 9 },
+      "loudness_source": "Community measurement; Meta publishes no figure. Same phone-speaker reasoning as TikTok for the tighter LRA.",
+      "aspect": {
+        "name": "9:16",
+        "num": 9,
+        "den": 16,
+        "reference_resolution": [1080, 1920],
+        "accepted": ["9:16", "4:5", "1:1"]
+      },
+      "safe_area_pct": {
+        "top": 12.0,
+        "bottom": 20.0,
+        "left": 5.0,
+        "right": 18.0
+      },
+      "caption_safe_area_pct": {
+        "top": 14.0,
+        "bottom": 22.0,
+        "left": 5.0,
+        "right": 18.0
+      },
+      "notes": "Feed crops to 4:5 in some surfaces; keep anything load-bearing inside the central 4:5 box if the clip will also appear in-feed."
+    },
+
+    "linkedin": {
+      "name": "LinkedIn",
+      "_comment": "LinkedIn publishes no loudness target and does not appear to normalise at all, which means whatever you upload is what plays. -14 keeps it level with material the same viewer just watched elsewhere rather than making it the loudest thing in the feed.",
+      "loudnorm": { "I": -14, "TP": -1.5, "LRA": 11 },
+      "loudness_source": "No published target. -14 chosen for consistency with the rest of the feed; TP -1.5 because there is no normalisation stage to catch an overshoot.",
+      "aspect": {
+        "name": "16:9",
+        "num": 16,
+        "den": 9,
+        "reference_resolution": [1920, 1080],
+        "accepted": ["16:9", "1:1", "4:5", "9:16"]
+      },
+      "safe_area_pct": {
+        "_comment": "Modest insets: LinkedIn's player chrome is light, but feed video autoplays MUTED, so the bottom band is where a burned-in caption has to survive being the only channel the viewer gets.",
+        "top": 6.0,
+        "bottom": 14.0,
+        "left": 5.0,
+        "right": 5.0
+      },
+      "caption_safe_area_pct": {
+        "top": 8.0,
+        "bottom": 16.0,
+        "left": 6.0,
+        "right": 6.0
+      },
+      "notes": "Autoplays muted in the feed. Captions are not optional here; enable them regardless of format preset."
+    }
+  }
+}

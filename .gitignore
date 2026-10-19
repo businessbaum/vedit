@@ -1,0 +1,42 @@
+# ── Media stays out of version control ────────────────────────────────
+projects/*/00_raw/
+projects/*/01_transcript/*.wav
+projects/*/02_cut/
+projects/*/03_graphics/render/
+projects/*/04_captions/render/
+projects/*/05_audio/
+projects/*/06_render/
+projects/*/exports/
+assets/broll/
+assets/music/
+assets/sfx/
+
+# Only the edit decision + transcript are worth keeping
+!projects/*/project.json
+!projects/*/01_transcript/*.json
+
+# ── Caches / tooling ──────────────────────────────────────────────────
+.cache/
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+.hyperframes/
+*.log
+
+# ── OS noise ──────────────────────────────────────────────────────────
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ── Projects: only the template and the samstag example's scripts are shared ──
+projects/*/
+!projects/_TEMPLATE/
+!projects/samstag/
+projects/samstag/media/
+projects/samstag/out/
+projects/samstag/scene/scene.html
+
+# ── Local agent settings ─────────────────────────────────────────────
+.claude/settings.local.json
+.venv-asr/

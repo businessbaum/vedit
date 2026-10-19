@@ -1,0 +1,96 @@
+{
+  "_comment": "Quiet burned-in subtitles for 1920x1080 long form. Legible without competing with the speaker: no box, no colour, no per-word animation. Off by default in the longform format preset - this preset exists for when the video is going somewhere that autoplays muted.",
+  "_schema": "presets/captions/*.json v1",
+  "_usage": "vedit/captions.py: build_ass(words, project, preset) emits the canonical 24-field V4+ Style Format line and the 10-field Events Format line. Every value under 'ass_style' is already an ASS field name, so it can be written straight through. Keys beginning with '_' are documentation and MUST be ignored.",
+
+  "name": "longform-subtle",
+  "calibrated": false,
+  "calibrated_against": null,
+
+  "play_res": [1920, 1080],
+  "_comment_play_res": "PlayResX/PlayResY MUST equal the render resolution. Then every px value below is a real output pixel and the width budget means what it says. If they differ, libass scales everything and the budget silently becomes wrong.",
+
+  "font": {
+    "_comment": "Reference the BUNDLED file, never a system installation. ass_fontname is the verified nameID 1 string from CONTRACT section 7 - libass matches on that, and a mismatch does not error: it silently falls back to Arial with exit 0. QC check (e) catches this by hashing a caption render against an Arial control.",
+    "file": "assets/fonts/Inter-SemiBold.ttf",
+    "fontsdir": "assets/fonts",
+    "ass_fontname": "Inter SemiBold",
+    "ass_bold": 0,
+    "_comment_bold": "Bold=0 with a static SemiBold file. Setting Bold=-1 here would ask libass for faux-bold on top of a face that is already semibold.",
+    "_comment_fontsdir": "assets/fonts contains FONTS ONLY - libass opens every file it finds there and errors on anything else. In a filter argument the path needs a DOUBLED backslash before the colon: fontsdir=C\\\\:/Users/... with forward slashes elsewhere."
+  },
+
+  "ass_style": {
+    "_comment": "Canonical V4+ Style field names, in order. Colours are ASS &HAABBGGRR - alpha 00 is fully OPAQUE, FF is invisible, and the byte order is reversed from HTML.",
+    "Name": "Default",
+    "Fontname": "Inter SemiBold",
+    "Fontsize": 48,
+    "PrimaryColour": "&H00FFFFFF",
+    "SecondaryColour": "&H00FFFFFF",
+    "OutlineColour": "&H00101010",
+    "BackColour": "&H64000000",
+    "Bold": 0,
+    "Italic": 0,
+    "Underline": 0,
+    "StrikeOut": 0,
+    "ScaleX": 100,
+    "ScaleY": 100,
+    "Spacing": 0,
+    "Angle": 0,
+    "BorderStyle": 1,
+    "Outline": 3,
+    "Shadow": 1,
+    "Alignment": 2,
+    "MarginL": 96,
+    "MarginR": 96,
+    "MarginV": 130,
+    "Encoding": 1
+  },
+
+  "_comment_margins": "MarginL/R = 5 % of 1920. MarginV = 12 % of 1080 rounded to 130 px, which is the YouTube caption safe area from presets/platforms.json - it clears the scrubber and leaves room for the viewer's own CC track above it. Alignment 2 = bottom centre.",
+
+  "position": {
+    "mode": "margin",
+    "_comment": "'margin' means libass places the line from Alignment plus the margins above. The other mode, 'band', is used by shortform-highlight and needs an explicit \\pos."
+  },
+
+  "grouping": {
+    "_comment": "PIXEL-width budget, never max_chars. German compound nouns are single unsplittable tokens: 'Geschwindigkeitsbegrenzung' is 26 characters and at 90 px occupies about 60 % of a 1920 frame. Any character cap either breaks mid-word or is set so low that normal lines look starved.",
+    "width_budget_px": 1440,
+    "width_budget_pct": 75.0,
+    "max_lines": 2,
+    "max_words": 14,
+    "min_duration_ms": 900,
+    "max_duration_ms": 6000,
+    "min_gap_ms": 80,
+    "lead_in_ms": 0,
+    "hold_out_ms": 150,
+    "break_on_sentence_punctuation": true,
+    "break_on_clause_punctuation": true,
+    "avoid_orphan_last_line_words": 2,
+    "_comment_orphan": "Do not leave a single word alone on line 2; rebalance the break instead."
+  },
+
+  "overflow": {
+    "_comment": "What to do when ONE token is wider than the budget on its own. Shrinking is the only correct answer for German - hyphenating a compound noun changes how it reads, and letting it run off frame loses the word entirely.",
+    "single_word_policy": "shrink",
+    "min_font_px": 34,
+    "shrink_step_px": 2,
+    "then": "clip_to_budget_and_flag",
+    "_comment_then": "If even min_font_px does not fit, emit the line anyway and record a QC finding rather than silently truncating."
+  },
+
+  "highlight": {
+    "mode": "none",
+    "_comment": "Long form gets no per-word highlight. Karaoke movement in the corner of the eye is exactly the thing that makes a talking head feel like a clip."
+  },
+
+  "safe_area": {
+    "source": "presets/platforms.json",
+    "_comment": "The margins above were derived from platforms.youtube.caption_safe_area_pct. If output.platform changes, recheck them - they are baked into this file as pixels, not recomputed at render time."
+  },
+
+  "uppercase": false,
+  "strip_terminal_punctuation": false,
+  "_comment_punctuation": "Long form keeps full punctuation. It is being read as text, not as a rhythm device."
+}

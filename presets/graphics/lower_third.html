@@ -1,0 +1,175 @@
+<!--
+  lower_third.html -- name/topic strap, bottom-left, alpha over footage.
+
+  PURE FUNCTION OF ?t=<seconds> (CONTRACT invariant 6). The kernel below reads
+  t and d out of location.search, computes every animated value once, writes
+  them to inline styles, and stops. There is no @keyframes, no transition and no
+  requestAnimationFrame anywhere in this file -- Chrome's --screenshot fires
+  "when the page looks loaded", which is not a clock, so anything that animates
+  itself would be sampled at a different moment on every run and the
+  content-addressed frame cache would start serving pixels that no longer match
+  its key.
+
+  Query parameters (written by vedit.gfx.frame_params):
+    t  seconds into the graphic     d  total duration in seconds
+    f  frame index                  n  total frames
+    w,h  window size                p  JSON props
+
+  props: { title, subtitle, kicker, side: "left"|"right" }
+-->
+<link rel="stylesheet" href="_base.css" />
+<title>Lower Third</title>
+
+<style>
+  .lt {
+    position: absolute;
+    left: var(--safe-x);
+    right: var(--safe-x);
+    bottom: calc(var(--safe-y) + var(--u) * 1.2);
+    display: flex;
+  }
+  .lt[data-side="right"] {
+    justify-content: flex-end;
+  }
+  .lt-inner {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: calc(var(--u) * 1.4);
+    max-width: 66%;
+    /* The right padding is a dedicated fade zone. The gradient stop is tied to
+       it with calc() so the dissolve always happens in empty plate and never
+       eats the last few characters of a long German subtitle. */
+    padding: calc(var(--u) * 1.15) calc(var(--u) * 5) calc(var(--u) * 1.2) calc(var(--u) * 1.45);
+    background: linear-gradient(
+      90deg,
+      var(--ink-90) 0%,
+      var(--ink-90) calc(100% - var(--u) * 5),
+      var(--ink-00) 100%
+    );
+    border-radius: var(--radius) 0 0 var(--radius);
+    /* Written by the kernel: a left-to-right wipe on entry. */
+    clip-path: inset(0 var(--wipe, 0%) 0 0);
+  }
+  .lt-bar {
+    width: calc(var(--u) * 0.34);
+    flex: 0 0 auto;
+    align-self: stretch;
+    transform-origin: bottom center;
+  }
+  .lt-text {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 0.5);
+    min-width: 0;
+  }
+  .lt-kicker {
+    display: block;
+  }
+  .lt-title {
+    max-width: 26ch;
+  }
+  .lt-sub {
+    max-width: 42ch;
+    color: rgba(246, 248, 251, 0.68); /* lifted off --muted: this sits on a plate */
+  }
+  @media (max-aspect-ratio: 1/1) {
+    .lt-inner {
+      max-width: 100%;
+    }
+    .lt-title {
+      max-width: 18ch;
+    }
+    .lt-sub {
+      max-width: 30ch;
+    }
+  }
+  .row {
+    /* Each row gets its own progress from the kernel, so the block arrives in
+       three steps rather than as one slab. */
+    opacity: var(--o, 1);
+    transform: translateY(var(--y, 0px));
+  }
+</style>
+
+<div class="stage">
+  <div class="lt" id="lt">
+    <div class="lt-inner" id="inner">
+      <div class="lt-bar accent-bar" id="bar"></div>
+      <div class="lt-text">
+        <span class="kicker row lt-kicker" id="kicker"></span>
+        <div class="title row lt-title" id="title"></div>
+        <div class="subtitle row lt-sub" id="sub"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- the t-kernel ---------------------------------------------------------
+  // Deliberately duplicated in each template rather than shared: a template is
+  // meant to be copied to make a new one, and a graphic that carries its own
+  // clock cannot be broken by an edit to somebody else's file.
+  (function () {
+    var q = new URLSearchParams(location.search);
+    var t = parseFloat(q.get("t") || "0");
+    var d = parseFloat(q.get("d") || "0");
+    var props = {};
+    try {
+      props = JSON.parse(q.get("p") || "{}");
+    } catch (e) {
+      props = {};
+    }
+
+    var IN = 0.44; // entrance
+    var OUT = 0.34; // exit
+    var clamp = function (v) {
+      return v < 0 ? 0 : v > 1 ? 1 : v;
+    };
+    var outCubic = function (p) {
+      return 1 - Math.pow(1 - clamp(p), 3);
+    };
+    // Entrance progress for element i, staggered. Exit is shared: the block
+    // leaves as one object, which reads as intentional rather than as a bug.
+    var enter = function (i) {
+      return outCubic((t - i * 0.075) / IN);
+    };
+    var exit = d > 0 ? outCubic((d - t) / OUT) : 1;
+
+    var el = function (id) {
+      return document.getElementById(id);
+    };
+    var text = function (id, value) {
+      var node = el(id);
+      if (value === undefined || value === null || value === "") {
+        node.style.display = "none";
+        return false;
+      }
+      node.textContent = String(value);
+      return true;
+    };
+
+    text("kicker", props.kicker);
+    text("title", props.title || "");
+    text("sub", props.subtitle);
+    el("lt").setAttribute("data-side", props.side === "right" ? "right" : "left");
+    if (props.accent) document.documentElement.style.setProperty("--accent", props.accent);
+
+    // Plate wipe: closed at t=0, fully open by IN, closing again at the end.
+    var plate = Math.min(outCubic(t / IN), exit);
+    el("inner").style.setProperty("--wipe", (100 - 100 * plate).toFixed(3) + "%");
+    el("inner").style.opacity = (0.25 + 0.75 * plate).toFixed(4);
+
+    // The accent bar grows from the baseline: the one element that moves on a
+    // different axis, which is what stops the strap looking like a slide.
+    el("bar").style.transform = "scaleY(" + Math.min(outCubic(t / (IN * 0.9)), exit).toFixed(4) + ")";
+
+    var rows = ["kicker", "title", "sub"];
+    for (var i = 0; i < rows.length; i++) {
+      var p = Math.min(enter(i + 1), exit);
+      var node = el(rows[i]);
+      node.style.setProperty("--o", p.toFixed(4));
+      node.style.setProperty("--y", ((1 - p) * 1.15).toFixed(3) + "vh");
+    }
+  })();
+</script>
